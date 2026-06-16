@@ -9,13 +9,21 @@ export interface Match {
   flag_home: string
   flag_away: string
   match_date: string
+  time?: string | null
+  stadium?: string | null
   status: MatchStatus
+  stage?: string | null
   group?: string
+  winner?: string | null
 }
 
 export interface Prediction {
+  id: string
+  created_at: string
   match_id: string
+  user_id: string
   choice: PredictionChoice
+  result: number | null
 }
 
 export interface LeaderboardEntry {

@@ -8,15 +8,14 @@ import { ThemeSwitcher } from '@/components/theme-switcher'
 import { cn } from '@/lib/utils'
 
 interface NavBarProps {
-  userEmail: string
+  userIdentifier: string
 }
 
 const NAV_LINKS = [
   { href: '/predictions', label: 'Predictions' },
-  { href: '/leaderboard', label: 'Leaderboard' },
 ]
 
-export function NavBar({ userEmail }: NavBarProps) {
+export function NavBar({ userIdentifier }: NavBarProps) {
   const pathname = usePathname()
 
   return (
@@ -47,7 +46,7 @@ export function NavBar({ userEmail }: NavBarProps) {
         <div className="flex items-center gap-3">
           <ThemeSwitcher />
           <span className="hidden sm:inline text-sm text-zinc-500 dark:text-zinc-400">
-            {userEmail}
+            {userIdentifier}
           </span>
           <LogoutButton />
         </div>

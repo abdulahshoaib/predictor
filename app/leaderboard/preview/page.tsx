@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
-export default function LeaderboardPage() {
+export default function LeaderboardPreview() {
   redirect('/predictions')
 }

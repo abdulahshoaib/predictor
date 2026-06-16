@@ -1,44 +1,33 @@
-import { NextLogo } from "./next-logo";
-import { SupabaseLogo } from "./supabase-logo";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   return (
-    <div className="flex flex-col gap-16 items-center">
-      <div className="flex gap-8 justify-center items-center">
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SupabaseLogo />
-        </a>
-        <span className="border-l rotate-45 h-6" />
-        <a href="https://nextjs.org/" target="_blank" rel="noreferrer">
-          <NextLogo />
-        </a>
+    <div className="relative w-full py-16 md:py-24 flex flex-col items-center justify-center text-center">
+      <div className="flex flex-col items-center gap-4 max-w-xl px-6">
+        {/* Category Tag */}
+        <span className="text-xs font-semibold tracking-widest text-emerald-600 dark:text-emerald-400 uppercase select-none">
+          World Cup 2026
+        </span>
+
+        {/* Heading */}
+        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-white leading-tight">
+          Predict the World Cup
+        </h1>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3 mt-6">
+          <Button asChild size="lg">
+            <Link href="/predictions" className="flex items-center gap-1.5">
+              Start Predicting <ArrowRight className="size-3.5" />
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" size="lg">
+            <Link href="/leaderboard">Leaderboard</Link>
+          </Button>
+        </div>
       </div>
-      <h1 className="sr-only">Supabase and Next.js Starter Template</h1>
-      <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
-        The fastest way to build apps with{" "}
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Supabase
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://nextjs.org/"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Next.js
-        </a>
-      </p>
-      <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
     </div>
   );
 }
