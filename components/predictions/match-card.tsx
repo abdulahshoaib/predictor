@@ -22,14 +22,10 @@ export function MatchCard({ match, prediction, onPredict }: MatchCardProps) {
 
   return (
     <Card className="bg-zinc-50 border-zinc-200 text-zinc-900 dark:bg-zinc-900/80 dark:border-zinc-800/80 dark:text-zinc-100 transition-shadow hover:shadow-md">
-      <CardContent className="flex items-center justify-between gap-4 py-5 px-6">
-        <TeamDisplay
-          name={match.team_home}
-          flag={match.flag_home}
-          align="left"
-        />
+      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-3 py-4 px-4 sm:py-5 sm:px-6">
+        <TeamDisplay name={match.team_home} flag={match.flag_home} align="left" />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 order-last sm:order-none">
           {CHOICES.map(({ value, label }) => (
             <Button
               key={value}
@@ -38,7 +34,7 @@ export function MatchCard({ match, prediction, onPredict }: MatchCardProps) {
               disabled={isLocked}
               onClick={() => onPredict(match.id, value)}
               className={cn(
-                'h-10 w-10 rounded-full transition-all',
+                'h-9 w-9 sm:h-10 sm:w-10 rounded-full transition-all',
                 prediction === value && 'ring-2 ring-primary/30 scale-110'
               )}
             >
@@ -47,11 +43,7 @@ export function MatchCard({ match, prediction, onPredict }: MatchCardProps) {
           ))}
         </div>
 
-        <TeamDisplay
-          name={match.team_away}
-          flag={match.flag_away}
-          align="right"
-        />
+        <TeamDisplay name={match.team_away} flag={match.flag_away} align="right" />
       </CardContent>
     </Card>
   )
@@ -67,12 +59,12 @@ function TeamDisplay({ name, flag, align }: TeamDisplayProps) {
   return (
     <div
       className={cn(
-        'flex items-center gap-3 min-w-[120px]',
-        align === 'right' && 'flex-row-reverse justify-start'
+        'flex items-center gap-2 min-w-[100px] sm:min-w-[120px]',
+        align === 'right' && 'sm:flex-row-reverse sm:justify-start'
       )}
     >
       <span className="text-2xl leading-none">{flag}</span>
-      <span className="font-semibold text-sm uppercase tracking-wide">
+      <span className="font-semibold text-xs sm:text-sm uppercase tracking-wide">
         {name}
       </span>
     </div>

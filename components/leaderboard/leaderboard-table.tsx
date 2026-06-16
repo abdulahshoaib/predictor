@@ -11,16 +11,16 @@ export function LeaderboardTable({
   currentUserId,
 }: LeaderboardTableProps) {
   return (
-    <div className="overflow-hidden rounded-xl ring-1 ring-foreground/10">
+    <div className="overflow-x-auto rounded-xl ring-1 ring-foreground/10">
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-primary text-primary-foreground">
-            <th className="px-6 py-3 text-center font-semibold w-20">Rank</th>
-            <th className="px-6 py-3 text-left font-semibold">User</th>
-            <th className="px-6 py-3 text-center font-semibold w-32">
+            <th className="px-3 sm:px-6 py-3 text-center font-semibold w-14 sm:w-20">Rank</th>
+            <th className="px-3 sm:px-6 py-3 text-left font-semibold">User</th>
+            <th className="hidden sm:table-cell px-6 py-3 text-center font-semibold w-32">
               Correct
             </th>
-            <th className="px-6 py-3 text-right font-semibold w-28">Points</th>
+            <th className="px-3 sm:px-6 py-3 text-right font-semibold w-20 sm:w-28">Points</th>
           </tr>
         </thead>
         <tbody>
