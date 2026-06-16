@@ -1,50 +1,78 @@
-import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>WorldCup 2026 Predictor</Link>
-            </div>
-            <Suspense>
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* Header */}
+      <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white text-zinc-900 dark:border-zinc-800 dark:bg-black dark:text-zinc-100">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-5">
+          <Link
+            href="/"
+            className="text-base font-bold tracking-tight text-zinc-950 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
+          >
+            WC Predictor
+          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeSwitcher />
+            <Suspense fallback={<div className="h-8 w-20 bg-muted animate-pulse rounded animate-duration-500" />}>
               <AuthButton />
             </Suspense>
           </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1 mx-auto max-w-3xl px-5 py-12 flex flex-col justify-center gap-8">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            World Cup 2026 Predictor
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+            Predict the outcome of every match, collect points, and rise to the top of the global leaderboard. Join the tournament excitement and test your football knowledge!
+          </p>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button asChild size="default" className="font-semibold bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700">
+              <Link href="/predictions">Start Predicting</Link>
+            </Button>
+            <Button asChild size="default" variant="outline" className="font-semibold">
+              <Link href="/leaderboard">View Leaderboard</Link>
+            </Button>
+          </div>
         </div>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
-      </div>
-    </main>
+        {/* Feature Cards matching the design system */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+          <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+            <h3 className="font-bold text-xs uppercase tracking-wide text-blue-600 dark:text-blue-400 mb-2">1. Predict</h3>
+            <p className="text-sm text-muted-foreground">
+              Cast your predictions (Home Win, Draw, or Away Win) before kickoff.
+            </p>
+          </div>
+          <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+            <h3 className="font-bold text-xs uppercase tracking-wide text-blue-600 dark:text-blue-400 mb-2">2. Score</h3>
+            <p className="text-sm text-muted-foreground">
+              Earn points for correct outcomes as match results are confirmed.
+            </p>
+          </div>
+          <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+            <h3 className="font-bold text-xs uppercase tracking-wide text-blue-600 dark:text-blue-400 mb-2">3. Win</h3>
+            <p className="text-sm text-muted-foreground">
+              Track your ranking on the live leaderboard and beat your friends.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full border-t border-zinc-200 dark:border-zinc-800 mt-auto">
+        <div className="max-w-3xl mx-auto px-5 py-6 flex items-center justify-between text-xs text-muted-foreground">
+          <p>© 2026 World Cup Predictor. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
   );
 }
