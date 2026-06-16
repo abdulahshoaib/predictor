@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { LogoutButton } from '@/components/logout-button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
+import wc26Logo from '@/app/wc26.png'
 
 interface NavBarProps {
   userIdentifier: string
@@ -24,9 +26,16 @@ export function NavBar({ userIdentifier }: NavBarProps) {
         <div className="flex items-center gap-6">
           <Link
             href="/predictions"
-            className="text-base font-bold tracking-tight text-zinc-950 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
+            className="flex items-center gap-2 text-base font-bold tracking-tight text-zinc-950 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
           >
-            WC Predictor
+            <Image
+              src={wc26Logo}
+              alt="World Cup 2026 Logo"
+              width={24}
+              height={24}
+              className="h-6 w-auto"
+            />
+            <span>WC Predictor</span>
           </Link>
           <div className="flex items-center gap-1">
             {NAV_LINKS.map((link) => (
