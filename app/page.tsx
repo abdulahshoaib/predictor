@@ -1,6 +1,6 @@
 import { AuthButton } from "@/components/auth-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Button } from "@/components/ui/button";
+import { Hero } from "@/components/hero";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -43,7 +43,6 @@ export default async function Home() {
             <span>WC Predictor</span>
           </Link>
           <div className="flex items-center gap-3">
-            <ThemeSwitcher />
             <Suspense
               fallback={
                 <div className="h-8 w-20 bg-muted animate-pulse rounded animate-duration-500" />
@@ -55,84 +54,13 @@ export default async function Home() {
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="flex-1 mx-auto max-w-5xl px-5 py-12 flex flex-col md:flex-row items-center gap-8 justify-between">
-        <div className="flex-1 w-full max-w-3xl flex flex-col gap-8">
-          <div className="space-y-4">
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-              World Cup 2026 Predictor
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-              Predict the outcome of every match, collect points, and rise to
-              the top of the global leaderboard. Join the tournament excitement
-              and test your football knowledge!
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Button
-                asChild
-                size="default"
-                className="font-semibold bg-green-600 hover:bg-green-700 text-white dark:bg-green-600 dark:hover:bg-green-700"
-              >
-                <Link href="/predictions">Start Predicting</Link>
-              </Button>
-              <Button
-                asChild
-                size="default"
-                variant="outline"
-                className="font-semibold"
-              >
-                <Link href="/leaderboard">View Leaderboard</Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* Feature Cards matching the design system */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-            <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <h3 className="font-bold text-xs uppercase tracking-wide text-green-600 dark:text-green-400 mb-2">
-                1. Predict
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Cast your predictions (Home Win, Draw, or Away Win) before
-                kickoff.
-              </p>
-            </div>
-            <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <h3 className="font-bold text-xs uppercase tracking-wide text-green-600 dark:text-green-400 mb-2">
-                2. Score
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Earn points for correct outcomes as match results are confirmed.
-              </p>
-            </div>
-            <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-              <h3 className="font-bold text-xs uppercase tracking-wide text-green-600 dark:text-green-400 mb-2">
-                3. Win
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Track your ranking on the live leaderboard and beat your
-                friends.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right side Logo */}
-        <div className="w-full md:w-auto shrink-0 flex justify-center py-4 md:py-0">
-          <Image
-            src={wc26Logo}
-            alt="World Cup 2026 Logo"
-            width={200}
-            height={200}
-            className="h-48 w-auto select-none filter drop-shadow-[0_4px_20px_rgba(0,0,0,0.12)]"
-          />
-        </div>
-      </main>
+      <Hero />
 
       {/* Footer */}
       <footer className="w-full border-t border-zinc-200 dark:border-zinc-800 mt-auto">
         <div className="max-w-3xl mx-auto px-5 py-6 flex items-center justify-between text-xs text-muted-foreground">
           <p>© 2026 World Cup Predictor. All rights reserved.</p>
+          <ThemeSwitcher />
         </div>
       </footer>
     </div>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Manrope } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Providers } from "@/components/providers";
 
 const manrope = Manrope({subsets:['latin'],variable:'--font-sans'});
 
@@ -12,8 +12,11 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "WC Predictor",
+  description: "World Cup 2026 Predictor App",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 const geistSans = Geist({
@@ -30,14 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", manrope.variable)}>
       <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Providers>
           {children}
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
