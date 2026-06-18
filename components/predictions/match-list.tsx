@@ -1,5 +1,4 @@
 "use client";
-
 import { useMemo } from "react";
 import { MatchCard } from "./match-card";
 import type { Match, PredictionChoice } from "@/lib/types";
