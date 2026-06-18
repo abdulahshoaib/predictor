@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { NavBar } from "@/components/predictions/nav-bar";
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
+import { LeaderboardVisibilityToggle } from "@/components/leaderboard/leaderboard-visibility-toggle";
 import type { LeaderboardEntry } from "@/lib/types";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
@@ -21,7 +21,8 @@ async function LeaderboardContent() {
     const [usersRes, predictionsRes, matchesRes] = await Promise.all([
       supabase
         .from("users")
-        .select("id, username, points")
+        .select("id, username, points, leaderboard")
+        .eq("leaderboard", "enabled")
         .order("points", { ascending: false }),
       supabase.from("predictions").select("user_id, match_id, choice, result"),
       supabase
@@ -113,31 +114,27 @@ async function LeaderboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <NavBar
-        userIdentifier={
-          (data.claims.user_metadata?.username || data.claims.email) as string
-        }
-      />
-      <main className="mx-auto max-w-5xl px-5 py-8 flex flex-col md:flex-row gap-8 items-start">
-        <div className="flex-1 w-full max-w-3xl">
-          <h1 className="text-2xl font-bold mb-6">Leaderboard</h1>
-          <LeaderboardTable
-            entries={entries}
-            currentUserId={data.claims.sub as string}
-          />
+    <main className="mx-auto max-w-5xl px-5 py-8 flex flex-col md:flex-row gap-8 items-start">
+      <div className="flex-1 w-full max-w-3xl">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Leaderboard</h1>
+          <LeaderboardVisibilityToggle />
         </div>
-        <div className="w-full md:w-auto shrink-0 flex justify-center py-4 md:py-14">
-          <Image
-            src={wc26Logo}
-            alt="World Cup 2026 Logo"
-            width={160}
-            height={160}
-            className="h-40 w-auto select-none filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
-          />
-        </div>
-      </main>
-    </div>
+        <LeaderboardTable
+          entries={entries}
+          currentUserId={data.claims.sub as string}
+        />
+      </div>
+      <div className="w-full md:w-auto shrink-0 flex justify-center py-4 md:py-14">
+        <Image
+          src={wc26Logo}
+          alt="World Cup 2026 Logo"
+          width={160}
+          height={160}
+          className="h-40 w-auto select-none filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
+        />
+      </div>
+    </main>
   );
 }
 

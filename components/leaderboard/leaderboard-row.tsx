@@ -1,5 +1,5 @@
+import { Crown, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
 import type { LeaderboardEntry } from '@/lib/types'
 
 interface LeaderboardRowProps {
@@ -7,47 +7,59 @@ interface LeaderboardRowProps {
   isCurrentUser: boolean
 }
 
-const RANK_STYLES: Record<number, string> = {
-  1: 'bg-yellow-500/15 text-yellow-950 dark:text-yellow-100 hover:bg-yellow-500/25',
-  2: 'bg-slate-300/10 text-slate-800 dark:text-slate-100 hover:bg-slate-300/20',
-  3: 'bg-amber-700/15 text-amber-950 dark:text-amber-100 hover:bg-amber-700/25',
+function RankIndicator({ rank }: { rank: number }) {
+  if (rank === 1) {
+    return <Crown className="w-4 h-4 text-yellow-500 shrink-0" />
+  }
+  if (rank === 2) {
+    return (
+      <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-[10px] font-black text-zinc-500 dark:text-zinc-300 shrink-0">
+        2
+      </span>
+    )
+  }
+  if (rank === 3) {
+    return (
+      <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-[10px] font-black text-amber-600 dark:text-amber-500 shrink-0">
+        3
+      </span>
+    )
+  }
+  return (
+    <span className="text-sm font-bold tabular-nums text-muted-foreground">{rank}</span>
+  )
 }
 
 export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
-  const rowStyle = RANK_STYLES[entry.rank]
-  const isLightRow = !rowStyle
-
   return (
-    <tr
+    <div
       className={cn(
-        'border-b border-border transition-colors text-foreground',
-        rowStyle,
-        isLightRow && isCurrentUser && 'bg-primary/20 hover:bg-primary/30',
-        isLightRow && !isCurrentUser && (entry.rank % 2 === 0 ? 'bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/85' : 'bg-white dark:bg-zinc-800/40 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/85')
+        'flex items-center gap-3 py-3 border-b border-zinc-100 dark:border-zinc-800/50 last:border-b-0 px-1',
+        isCurrentUser && 'bg-primary/5 dark:bg-primary/10 -mx-1 px-2 rounded-lg'
       )}
     >
-      <td className={cn(
-        "px-3 sm:px-6 py-3 sm:py-4 text-center font-bold text-base",
-        entry.rank === 1 && "text-yellow-600 dark:text-yellow-400",
-        entry.rank === 2 && "text-slate-600 dark:text-slate-300",
-        entry.rank === 3 && "text-amber-700 dark:text-amber-500"
-      )}>
-        {entry.rank}
-      </td>
-      <td className="px-3 sm:px-6 py-3 sm:py-4 font-medium">
-        <span>{entry.display_name}</span>
+      {/* Rank */}
+      <span className="w-7 shrink-0 flex items-center justify-center">
+        <RankIndicator rank={entry.rank} />
+      </span>
+
+      {/* Name */}
+      <span className="flex-1 text-sm font-medium truncate text-foreground flex items-center gap-1.5">
+        {entry.display_name}
         {isCurrentUser && (
-          <Badge variant="secondary" className="ml-2">
-            You
-          </Badge>
+          <Minus className="w-2.5 h-2.5 text-foreground opacity-20 dark:opacity-10 shrink-0" />
         )}
-      </td>
-      <td className="hidden sm:table-cell px-6 py-4 text-center text-muted-foreground">
+      </span>
+
+      {/* Correct/Total */}
+      <span className="hidden sm:inline text-xs text-muted-foreground tabular-nums">
         {entry.correct_predictions}/{entry.total_predictions}
-      </td>
-      <td className="px-3 sm:px-6 py-3 sm:py-4 text-right font-bold text-base">
-        {entry.total_score}
-      </td>
-    </tr>
+      </span>
+
+      {/* Points */}
+      <span className="text-sm font-bold tabular-nums text-foreground shrink-0">
+        {entry.total_score} <span className="text-[10px] font-semibold text-muted-foreground">pts</span>
+      </span>
+    </div>
   )
 }
