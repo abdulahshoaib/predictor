@@ -9,7 +9,7 @@ import type { Match, PredictionChoice } from "@/lib/types";
 import { useAuth } from "@/components/auth-provider";
 import { useAuthFetch } from "@/lib/hooks/use-auth-fetch";
 
-const API = "http://localhost:5672";
+const API = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function PredictionsTabs() {
   const { jwt, userId, loading: authLoading } = useAuth();
@@ -39,7 +39,8 @@ export function PredictionsTabs() {
         if (Array.isArray(predsData)) {
           predsList = predsData;
         } else if (predsData && typeof predsData === "object") {
-          predsList = predsData.predictions || predsData.data || predsData.results || [];
+          predsList =
+            predsData.predictions || predsData.data || predsData.results || [];
         }
 
         const lookup: Record<string, PredictionChoice> = {};
