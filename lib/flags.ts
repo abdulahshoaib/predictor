@@ -116,6 +116,7 @@ export function mapDbMatchToMatch(dbMatch: any): Match {
     status,
     stage: dbMatch.stage || null,
     group: dbMatch.group_name || undefined,
-    winner: dbMatch.winner || null,
+    winner: dbMatch.winner || dbMatch.result || null,
+    score_line: dbMatch.score_line || null,
   }
 }

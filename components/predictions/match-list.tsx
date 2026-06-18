@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { MatchCard } from "./match-card";
 import type { Match, PredictionChoice } from "@/lib/types";
-import { createClient } from "@/lib/supabase/client";
 
 function getLocalDateString(match: Match): string {
   if (match.time) {
@@ -11,8 +10,8 @@ function getLocalDateString(match: Match): string {
       const date = new Date(match.time);
       if (!isNaN(date.getTime())) {
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
       }
     } catch {
@@ -22,18 +21,8 @@ function getLocalDateString(match: Match): string {
   return match.match_date || "TBD";
 }
 
-function groupMatchesByDate(matches: Match[]) {
-  return matches.reduce<Record<string, Match[]>>((groups, match) => {
-    const date = getLocalDateString(match);
-    if (!groups[date]) groups[date] = [];
-    groups[date].push(match);
-    return groups;
-  }, {});
-}
-
 function formatDate(dateString: string): string {
-  // Gracefully handle TBD or invalid dates
-  if (!dateString || dateString === "TBD" || dateString === "Unknown Date" || !dateString.includes("-")) {
+  if (!dateString || dateString === "TBD" || !dateString.includes("-")) {
     return dateString || "TBD";
   }
   try {
@@ -51,87 +40,68 @@ function formatDate(dateString: string): string {
 }
 
 interface MatchListProps {
-  userId: string;
-  initialPredictions?: Record<string, PredictionChoice>;
   matches: Match[];
+  predictions: Record<string, PredictionChoice>;
+  onPredict: (matchId: string, choice: PredictionChoice) => void;
+  loading: boolean;
 }
 
 export function MatchList({
-  userId,
-  initialPredictions = {},
   matches,
+  predictions,
+  onPredict,
+  loading,
 }: MatchListProps) {
-  const [predictions, setPredictions] =
-    useState<Record<string, PredictionChoice>>(initialPredictions);
+  // Only show upcoming (not finished) matches
+  const upcomingMatches = useMemo(
+    () => matches.filter((m) => m.status !== "finished"),
+    [matches],
+  );
 
-  // Filter to only show matches that have not happened yet (upcoming)
-  const upcomingMatches = useMemo(() => {
-    return matches.filter((m) => m.status === "upcoming");
-  }, [matches]);
+  const matchesByDate = useMemo(() => {
+    const groups: Record<string, Match[]> = {};
+    upcomingMatches.forEach((m) => {
+      const key = getLocalDateString(m);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(m);
+    });
+    return groups;
+  }, [upcomingMatches]);
 
-  const matchesByDate = useMemo(() => groupMatchesByDate(upcomingMatches), [upcomingMatches]);
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-3">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-16 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 animate-pulse"
+          />
+        ))}
+      </div>
+    );
+  }
 
-  const handlePredict = async (matchId: string, choice: PredictionChoice) => {
-    setPredictions((prev) => ({ ...prev, [matchId]: choice }));
-
-    const supabase = createClient();
-    const numericMatchId = parseInt(matchId, 10);
-
-    try {
-      const { data: existing, error: fetchError } = await supabase
-        .from("predictions")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("match_id", numericMatchId)
-        .maybeSingle();
-
-      if (fetchError) {
-        console.error(
-          "Error checking existing prediction:",
-          fetchError.message,
-        );
-      }
-
-      if (existing) {
-        const { error: updateError } = await supabase
-          .from("predictions")
-          .update({ choice })
-          .eq("id", existing.id);
-
-        if (updateError) {
-          console.error("Error updating prediction:", updateError.message);
-        }
-      } else {
-        const { error: insertError } = await supabase
-          .from("predictions")
-          .insert({
-            user_id: userId,
-            match_id: numericMatchId,
-            choice,
-          });
-
-        if (insertError) {
-          console.error("Error inserting prediction:", insertError.message);
-        }
-      }
-    } catch (err) {
-      console.error("Unexpected error saving prediction:", err);
-    }
-  };
+  if (upcomingMatches.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground text-center py-12">
+        No upcoming matches found.
+      </p>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-8">
-      {Object.entries(matchesByDate).map(([date, matches]) => (
-        <section key={date} className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium text-muted-foreground px-1">
+    <div className="flex flex-col gap-6">
+      {Object.entries(matchesByDate).map(([date, dateMatches]) => (
+        <section key={date} className="flex flex-col gap-2">
+          <h2 className="text-xs font-medium text-muted-foreground px-1 uppercase tracking-wider">
             {formatDate(date)}
           </h2>
-          {matches.map((match) => (
+          {dateMatches.map((match) => (
             <MatchCard
               key={match.id}
               match={match}
               prediction={predictions[match.id]}
-              onPredict={handlePredict}
+              onPredict={onPredict}
             />
           ))}
         </section>
