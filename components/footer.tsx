@@ -12,10 +12,10 @@ export default function Footer() {
           </Button>
         </p>
         <div className="flex items-center gap-2">
-          <span className="hidden dark:inline text-[10px] text-muted-foreground/80">
+          <span className="hidden dark:inline text-xs text-muted-foreground/80">
             (just how i like it)
           </span>
-          <span className="inline dark:hidden text-[10px] text-muted-foreground/80">
+          <span className="inline dark:hidden text-xs text-muted-foreground/80">
             (my eyes 😭)
           </span>
           <ThemeSwitcher />

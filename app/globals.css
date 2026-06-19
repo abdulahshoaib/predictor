@@ -122,6 +122,11 @@
 
   html {
     @apply bg-background;
+    font-size: 106.25%; /* scale base font size to 17px for improved legibility */
+
+    @media (min-width: 768px) {
+      font-size: 108%; /* scale to 17.28px on desktop */
+    }
   }
 
   body {

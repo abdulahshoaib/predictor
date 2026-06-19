@@ -24,7 +24,7 @@ export function LeaderboardTable({
   return (
     <div className="flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 px-1 pb-2 border-b border-zinc-200 dark:border-zinc-800 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="flex items-center gap-3 px-1 pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         <span className="w-7 shrink-0 text-center">#</span>
         <span className="flex-1">Player</span>
         <span className="shrink-0">Points</span>

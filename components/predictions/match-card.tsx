@@ -115,8 +115,8 @@ export function MatchCard(props: MatchCardProps) {
       : "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 animate-in zoom-in duration-300 rounded-full border-2 border-white bg-primary dark:border-zinc-950";
 
   return (
-    <div className="relative flex h-35 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="mb-3 flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
+    <div className="relative flex h-auto min-h-[148px] flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
         <div className="flex min-w-0 items-center gap-1.5">
           {match.group && (
             <span className=" font-semibold tracking-wider">
@@ -136,7 +136,7 @@ export function MatchCard(props: MatchCardProps) {
           ) : prediction ? (
             <Badge
               variant="secondary"
-              className="h-4 border-emerald-100 bg-emerald-50 px-1.5 py-0 text-[10px] text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
+              className="h-5 border-emerald-100 bg-emerald-50 px-2 py-0 text-xs text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
             >
               ✓ {getPredictionLabel(prediction, match)}
             </Badge>
@@ -154,7 +154,7 @@ export function MatchCard(props: MatchCardProps) {
           </span>
           <span
             className={cn(
-              "max-w-20 wrap-break-word text-balance text-center text-[11px] font-semibold leading-tight",
+              "max-w-24 wrap-break-word text-balance text-center text-xs font-semibold leading-tight",
               getTeamTextClass("home"),
             )}
           >
@@ -223,7 +223,7 @@ export function MatchCard(props: MatchCardProps) {
           </span>
           <span
             className={cn(
-              "max-w-20 wrap-break-word text-balance text-center text-[11px] font-semibold leading-tight",
+              "max-w-24 wrap-break-word text-balance text-center text-xs font-semibold leading-tight",
               getTeamTextClass("away"),
             )}
           >
@@ -233,7 +233,7 @@ export function MatchCard(props: MatchCardProps) {
       </div>
 
       {isResultCard && (
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-[10px] tracking-wider text-muted-foreground">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-xs tracking-wider text-muted-foreground">
           {prediction ? (
             <span className="min-w-0 truncate">
               Prediction:{" "}
@@ -264,7 +264,7 @@ export function MatchCard(props: MatchCardProps) {
           <Button
             onClick={handleConfirm}
             size="sm"
-            className="h-6 rounded-full px-4 text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-1 duration-200"
+            className="h-6 rounded-full px-4 text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-1 duration-200"
           >
             Confirm
           </Button>

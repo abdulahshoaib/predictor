@@ -13,14 +13,14 @@ function RankIndicator({ rank }: { rank: number }) {
   }
   if (rank === 2) {
     return (
-      <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-[10px] font-black text-zinc-500 dark:text-zinc-300 shrink-0">
+      <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-xs font-black text-zinc-500 dark:text-zinc-300 shrink-0">
         2
       </span>
     );
   }
   if (rank === 3) {
     return (
-      <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-[10px] font-black text-amber-600 dark:text-amber-500 shrink-0">
+      <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-xs font-black text-amber-600 dark:text-amber-500 shrink-0">
         3
       </span>
     );
@@ -55,7 +55,7 @@ export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
       {/* Points */}
       <span className="text-sm font-bold tabular-nums text-foreground shrink-0">
         {entry.total_score}{" "}
-        <span className="text-[10px] font-semibold text-muted-foreground">
+        <span className="text-xs font-semibold text-muted-foreground">
           pts
         </span>
       </span>
