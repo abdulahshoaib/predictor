@@ -60,8 +60,21 @@ export function PredictionsTabs() {
           const mappedUpcoming = upcoming.map(mapDbMatchToMatch);
           const mappedFullTime = full_time.map(mapDbMatchToMatch);
 
-          setUpcomingMatches(mappedUpcoming);
-          setFullTimeMatches(mappedFullTime);
+          // Combine and de-duplicate matches to safely partition by status
+          const allMatches = [...mappedUpcoming, ...mappedFullTime];
+          const uniqueMatchesMap = new Map<string, Match>();
+          allMatches.forEach((m) => {
+            uniqueMatchesMap.set(m.id, m);
+          });
+          const uniqueMatches = Array.from(uniqueMatchesMap.values());
+
+          const finalUpcoming = uniqueMatches.filter((m) => m.status === "upcoming");
+          const finalFullTime = uniqueMatches.filter(
+            (m) => m.status === "finished" || m.status === "live"
+          );
+
+          setUpcomingMatches(finalUpcoming);
+          setFullTimeMatches(finalFullTime);
         }
       } catch (err) {
         console.error("Failed to load match predictions:", err);
@@ -93,17 +106,29 @@ export function PredictionsTabs() {
   };
 
   return (
-    <Tabs defaultValue="upcoming" className="flex flex-col gap-6">
-      <TabsList variant="line" className="w-full">
-        <TabsTrigger value="upcoming" className="flex-1 gap-2">
-          Upcoming Matches
-        </TabsTrigger>
-        <TabsTrigger value="my-predictions" className="flex-1 gap-2">
-          My Predictions
-        </TabsTrigger>
-      </TabsList>
+    <Tabs defaultValue="upcoming" className="flex flex-col gap-8 w-full">
+      {/* Centered pill-shaped switch */}
+      <div className="flex w-full justify-center">
+        <TabsList className="grid w-full max-w-md grid-cols-2 rounded-full border border-border/50 bg-muted/30 p-1">
+          <TabsTrigger
+            value="upcoming"
+            className="rounded-full transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+          >
+            Upcoming
+          </TabsTrigger>
+          <TabsTrigger
+            value="my-predictions"
+            className="rounded-full transition-all data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+          >
+            Predicted
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
-      <TabsContent value="upcoming">
+      <TabsContent
+        value="upcoming"
+        className="mt-0 focus-visible:outline-none focus-visible:ring-0"
+      >
         <MatchList
           matches={upcomingMatches}
           predictions={predictions}
@@ -111,7 +136,11 @@ export function PredictionsTabs() {
           loading={loading}
         />
       </TabsContent>
-      <TabsContent value="my-predictions">
+
+      <TabsContent
+        value="my-predictions"
+        className="mt-0 focus-visible:outline-none focus-visible:ring-0"
+      >
         <PredictionList
           matches={fullTimeMatches}
           userPredictions={predictions}
