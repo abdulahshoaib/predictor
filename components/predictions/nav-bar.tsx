@@ -88,19 +88,18 @@ export function NavBar() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeSwitcher />
             {loading ? (
               <div className="h-4 w-20 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded" />
             ) : username ? (
               <div className="flex items-center gap-2">
                 {points !== null && (
-                  <button
+                  <Button
                     onClick={() => setIsOpen(true)}
                     className="inline-flex items-center gap-1 rounded-full bg-emerald-50/80 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-100 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/50 dark:hover:bg-emerald-950/60 transition-all cursor-pointer"
                     title="Leaderboard Settings"
                   >
                     🏆 {points} {points === 1 ? "pt" : "pts"}
-                  </button>
+                  </Button>
                 )}
                 <span className="hidden sm:inline text-sm text-zinc-500 dark:text-zinc-400">
                   {username}
