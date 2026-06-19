@@ -53,7 +53,7 @@ export function NavBar() {
           <div className="flex items-center gap-6">
             <Link
               href="/predictions"
-              className="flex items-center gap-2 text-base font-bold tracking-tight text-zinc-950 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
+              className="hidden sm:flex items-center gap-2 text-base font-bold tracking-tight text-zinc-950 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
             >
               <Image
                 src={wc26Logo}

@@ -123,9 +123,6 @@ export function MatchCard(props: MatchCardProps) {
               Group {match.group}
             </span>
           )}
-          {isResultCard && match.stage && (
-            <span className="truncate tracking-wider">{match.stage}</span>
-          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
