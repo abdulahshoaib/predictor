@@ -8,7 +8,7 @@ export default function Footer() {
         <p>
           {"checkout other cool stuff by "}
           <Button variant="link" className="p-0 m-0 text-foreground">
-            <a href="abdullahshoaib.dev">@abdullah</a>
+            <a href="https://abdullahshoaib.dev">@abdullah</a>
           </Button>
         </p>
         <div className="flex items-center gap-2">
