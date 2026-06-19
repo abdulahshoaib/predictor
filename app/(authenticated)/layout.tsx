@@ -1,5 +1,6 @@
 import Footer from "@/components/footer";
 import { NavBar } from "@/components/predictions/nav-bar";
+import { PredictionsProvider } from "@/components/predictions/predictions-provider";
 
 export default function AuthenticatedLayout({
   children,
@@ -9,7 +10,7 @@ export default function AuthenticatedLayout({
   return (
     <div className="min-h-screen text-foreground">
       <NavBar />
-      {children}
+      <PredictionsProvider>{children}</PredictionsProvider>
     </div>
   );
 }
