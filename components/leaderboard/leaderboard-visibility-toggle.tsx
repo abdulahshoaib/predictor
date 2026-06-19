@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
-import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 export function LeaderboardVisibilityToggle() {

@@ -1,5 +1,4 @@
 import { AuthButton } from "@/components/auth-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Hero } from "@/components/hero";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -56,19 +55,7 @@ export default async function Home() {
       </nav>
 
       <Hero />
-
-      {/* Footer */}
-      <footer className="w-full border-t border-zinc-200 dark:border-zinc-800 mt-auto">
-        <div className="max-w-3xl mx-auto px-5 py-6 flex items-center justify-between text-xs text-muted-foreground">
-          <p>
-            {"checkout other cool stuff by "}
-            <Button variant="link" className="p-0 m-0 text-foreground">
-              <a href="abdullahshoaib.dev">@abdullah</a>
-            </Button>
-          </p>
-          <ThemeSwitcher />
-        </div>
-      </footer>
     </div>
   );
 }
+

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/logout-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useAuth } from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -113,132 +112,63 @@ export function NavBar() {
 
       {/* Leaderboard Settings Popup */}
       {isOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => !saving && setIsOpen(false)}
+            onClick={() => setIsOpen(false)}
           />
 
           {/* Modal */}
-          <div className="relative w-full max-w-sm rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 animate-in zoom-in-95 duration-200 overflow-hidden">
+          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl animate-in zoom-in-95 duration-200 dark:border-zinc-800 dark:bg-zinc-950">
             {/* Header */}
-            <div className="px-6 pt-6 pb-4">
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-white tracking-tight">
-                Leaderboard Settings
+            <div className="px-6 pb-4 pt-6">
+              <h3 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-white">
+                Scoring Rules
               </h3>
-              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-                Control whether your profile appears on the global leaderboard.
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                How points are calculated for the global leaderboard.
               </p>
             </div>
 
-            {/* Toggle options */}
-            <div className="px-4 pb-4 flex flex-col gap-2">
-              {/* Enabled option */}
-              <button
-                onClick={() => setPending("enabled")}
-                disabled={saving}
-                className={cn(
-                  "w-full flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-150 cursor-pointer disabled:opacity-50",
-                  pending === "enabled"
-                    ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 dark:border-emerald-600"
-                    : "border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700",
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-                    pending === "enabled"
-                      ? "border-emerald-500 bg-emerald-500"
-                      : "border-zinc-300 dark:border-zinc-600",
-                  )}
-                >
-                  {pending === "enabled" && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                  )}
+            {/* Scoring Breakdown */}
+            <div className="flex flex-col gap-2 px-4 pb-6">
+              <div className="flex items-center justify-between border-b border-zinc-200 p-3.5 dark:border-zinc-800">
+                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                  Correct Prediction
                 </span>
-                <div>
-                  <p
-                    className={cn(
-                      "text-xs font-semibold",
-                      pending === "enabled"
-                        ? "text-emerald-700 dark:text-emerald-400"
-                        : "text-zinc-700 dark:text-zinc-300",
-                    )}
-                  >
-                    Visible on Leaderboard
-                  </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Your rank, username, and points are public.
-                  </p>
-                </div>
-              </button>
+                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                  +3 points
+                </span>
+              </div>
 
-              {/* Disabled option */}
-              <button
-                onClick={() => setPending("disabled")}
-                disabled={saving}
-                className={cn(
-                  "w-full flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-150 cursor-pointer disabled:opacity-50",
-                  pending === "disabled"
-                    ? "border-zinc-400 bg-zinc-50 dark:bg-zinc-800/60 dark:border-zinc-600"
-                    : "border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700",
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-                    pending === "disabled"
-                      ? "border-zinc-500 bg-zinc-500 dark:border-zinc-400 dark:bg-zinc-400"
-                      : "border-zinc-300 dark:border-zinc-600",
-                  )}
-                >
-                  {pending === "disabled" && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                  )}
+              <div className="flex items-center justify-between border-b border-zinc-200 p-3.5 dark:border-zinc-800 ">
+                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                  Incorrect Prediction
                 </span>
-                <div>
-                  <p
-                    className={cn(
-                      "text-xs font-semibold",
-                      pending === "disabled"
-                        ? "text-zinc-700 dark:text-zinc-300"
-                        : "text-zinc-700 dark:text-zinc-300",
-                    )}
-                  >
-                    Hidden from Leaderboard
-                  </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Your profile won&apos;t appear in the rankings.
-                  </p>
-                </div>
-              </button>
+                <span className="text-sm font-bold text-red-600 dark:text-red-400">
+                  -1 point
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between border-zinc-200 p-3.5 dark:border-zinc-800">
+                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                  No Prediction
+                </span>
+                <span className="text-sm font-bold text-zinc-500 dark:text-zinc-500">
+                  0 points
+                </span>
+              </div>
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between gap-2 border-t border-zinc-100 dark:border-zinc-800 px-4 py-3 bg-zinc-50/50 dark:bg-zinc-900/40">
+            <div className="border-t border-zinc-100 bg-zinc-50/50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/40">
               <Button
                 onClick={() => setIsOpen(false)}
-                disabled={saving}
-                variant="destructive"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirm}
-                disabled={!hasChange || saving || saved}
                 variant="default"
+                className="w-full"
               >
-                {saving ? (
-                  <span className="flex items-center justify-center gap-1.5">
-                    <span className="h-3 w-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                    Saving…
-                  </span>
-                ) : saved ? (
-                  "✓ Saved"
-                ) : (
-                  "Confirm"
-                )}
+                Got it
               </Button>
             </div>
           </div>

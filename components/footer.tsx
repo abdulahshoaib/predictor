@@ -11,7 +11,15 @@ export default function Footer() {
             <a href="abdullahshoaib.dev">@abdullah</a>
           </Button>
         </p>
-        <ThemeSwitcher />
+        <div className="flex items-center gap-2">
+          <span className="hidden dark:inline text-xs text-muted-foreground/80">
+            (just how i like it)
+          </span>
+          <span className="inline dark:hidden text-xs text-muted-foreground/80">
+            (my eyes 😭)
+          </span>
+          <ThemeSwitcher />
+        </div>
       </div>
     </footer>
   );

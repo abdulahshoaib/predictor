@@ -118,10 +118,7 @@ async function LeaderboardContent() {
     <main className="mx-auto max-w-5xl px-5 py-8 flex flex-col md:flex-row gap-8 items-start">
       <div className="flex-1 w-full max-w-3xl">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex flex-row justify-center item-center">
-            <h1 className="text-2xl font-bold">Leaderboard</h1>
-            <Info />
-          </div>
+          <h1 className="text-2xl font-bold">Leaderboard</h1>
           <LeaderboardVisibilityToggle />
         </div>
         <LeaderboardTable
