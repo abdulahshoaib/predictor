@@ -7,24 +7,41 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 function formatTime(isoString: string) {
-  const date = new Date(isoString);
-  return date.toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  try {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
 }
 
-function getPredictionLabel(prediction: PredictionChoice, match: Match): string {
+function getPredictionLabel(
+  prediction: PredictionChoice,
+  match: Match,
+): string {
   if (prediction === "home") return match.team_home;
   if (prediction === "away") return match.team_away;
   return "Draw";
 }
 
-interface MatchCardProps {
+type PredictMatchCardProps = {
+  mode?: "predict";
   match: Match;
   prediction?: PredictionChoice;
   onPredict: (matchId: string, choice: PredictionChoice) => void;
-}
+};
+
+type ResultMatchCardProps = {
+  mode: "result";
+  match: Match;
+  prediction?: PredictionChoice;
+  isCorrect?: boolean;
+};
+
+type MatchCardProps = PredictMatchCardProps | ResultMatchCardProps;
 
 const CHOICES: { value: PredictionChoice; label: string }[] = [
   { value: "home", label: "H" },
@@ -32,7 +49,39 @@ const CHOICES: { value: PredictionChoice; label: string }[] = [
   { value: "away", label: "A" },
 ];
 
-export function MatchCard({ match, prediction, onPredict }: MatchCardProps) {
+const CHOICE_LABELS: Record<PredictionChoice, string> = {
+  home: "Home Win",
+  draw: "Draw",
+  away: "Away Win",
+};
+
+function getResultClass(predicted: boolean, isCorrect?: boolean) {
+  if (!predicted) return "text-zinc-400 dark:text-zinc-500";
+  if (isCorrect === true) return "text-emerald-600 dark:text-emerald-400";
+  if (isCorrect === false) return "text-red-500 dark:text-red-400";
+  return "text-zinc-500";
+}
+
+function getResultDotClass(predicted: boolean, isCorrect?: boolean) {
+  if (!predicted) return "bg-zinc-400";
+  if (isCorrect === true) return "bg-emerald-500";
+  if (isCorrect === false) return "bg-red-500";
+  return "bg-zinc-400";
+}
+
+function getResultLabel(predicted: boolean, isCorrect?: boolean) {
+  if (!predicted) return "Not Predicted";
+  if (isCorrect === true) return "Correct";
+  if (isCorrect === false) return "Wrong";
+  return "Pending";
+}
+
+export function MatchCard(props: MatchCardProps) {
+  const { match, prediction } = props;
+  const isResultCard = props.mode === "result";
+  const isCorrect = isResultCard ? props.isCorrect : undefined;
+  const predicted = Boolean(prediction);
+  const resultClass = getResultClass(predicted, isCorrect);
   const [localChoice, setLocalChoice] = useState<PredictionChoice | undefined>(
     prediction,
   );
@@ -47,112 +96,180 @@ export function MatchCard({ match, prediction, onPredict }: MatchCardProps) {
   };
 
   const handleConfirm = () => {
-    if (localChoice) {
-      onPredict(match.id, localChoice);
+    if (!isResultCard && localChoice) {
+      props.onPredict(match.id, localChoice);
     }
   };
 
+  const getTeamTextClass = (choice: PredictionChoice) => {
+    if (!isResultCard || prediction !== choice) return "text-foreground";
+    return resultClass;
+  };
+
+  const getMarkerClass = () =>
+    isResultCard
+      ? cn(
+          "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-950",
+          getResultDotClass(predicted, isCorrect),
+        )
+      : "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 animate-in zoom-in duration-300 rounded-full border-2 border-white bg-primary dark:border-zinc-950";
+
   return (
-    <div className="py-4 border-b border-zinc-100 dark:border-zinc-800/50 last:border-b-0">
-      {/* Top row: meta */}
-      <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-2.5">
-        <div className="flex items-center gap-1.5">
+    <div className="relative flex h-35 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="mb-3 flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
+        <div className="flex min-w-0 items-center gap-1.5">
           {match.group && (
-            <span className="font-semibold uppercase tracking-wider">
-              {match.group}
+            <span className=" font-semibold tracking-wider">
+              Group {match.group}
             </span>
           )}
-          {match.stage && (
-            <span className="uppercase tracking-wider">{match.stage}</span>
+          {isResultCard && match.stage && (
+            <span className="truncate tracking-wider">{match.stage}</span>
           )}
         </div>
-        <div className="flex items-center gap-1.5">
+
+        <div className="flex shrink-0 items-center gap-1.5">
           {match.time && <span>{formatTime(match.time)}</span>}
-          {match.status && (
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 uppercase tracking-wide">
-              {match.status}
-            </Badge>
-          )}
-          {prediction && (
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-100 dark:border-emerald-900/30">
+          {isResultCard ? (
+            match.status === "live" ? (
+              <></>
+            ) : (
+              <span className="font-semibold text-zinc-400">FT</span>
+            )
+          ) : prediction ? (
+            <Badge
+              variant="secondary"
+              className="h-4 border-emerald-100 bg-emerald-50 px-1.5 py-0 text-[10px] text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
+            >
               ✓ {getPredictionLabel(prediction, match)}
             </Badge>
-          )}
+          ) : null}
         </div>
       </div>
 
-      {/* Teams row */}
-      <div className="flex items-center gap-3">
-        {/* Home */}
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-xl leading-none select-none shrink-0 relative">
-            {match.flag_home}
-            {prediction === "home" && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white dark:border-zinc-950 animate-in zoom-in duration-300" />
-            )}
+      <div className="flex w-full items-start justify-between gap-2">
+        <div className="flex flex-1 flex-col items-center gap-2">
+          <span className="relative shrink-0 select-none text-2xl leading-none">
+            <span className="block overflow-hidden rounded-md shadow-sm">
+              {match.flag_home}
+            </span>
+            {prediction === "home" && <span className={getMarkerClass()} />}
           </span>
           <span
             className={cn(
-              "text-xs font-bold uppercase truncate transition-colors",
-              prediction === "home"
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-foreground",
+              "max-w-20 wrap-break-word text-balance text-center text-[11px] font-semibold leading-tight",
+              getTeamTextClass("home"),
             )}
           >
-            {match.team_home}
+            {match.team_home || "TBD"}
           </span>
         </div>
 
-        {/* Prediction buttons */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {CHOICES.map(({ value, label }) => {
-            const isConfirmed = prediction === value;
-            const isSelected = localChoice === value && !isConfirmed;
-
-            return (
-              <Button
-                key={value}
-                onClick={() => handleChoiceClick(value)}
-                variant={isConfirmed ? "default" : isSelected ? "outline" : "ghost"}
-                size="icon-xs"
+        {isResultCard ? (
+          <div className="flex shrink-0 flex-col items-center gap-2">
+            {match.score_line ? (
+              <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-sm tracking-wide text-zinc-900 dark:bg-zinc-800/40 dark:text-zinc-50">
+                {match.score_line.replace("-", " – ")}
+              </div>
+            ) : (
+              <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground dark:bg-zinc-800/40">
+                {match.status === "live" ? "Live" : "FT"}
+              </div>
+            )}
+            {prediction === "draw" && (
+              <span
                 className={cn(
-                  "rounded-full font-bold text-xs transition-all",
-                  isConfirmed && "bg-primary text-white hover:bg-primary",
-                  isSelected && "border-blue-300 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:border-blue-800 dark:text-blue-400 dark:bg-blue-950/40 dark:hover:bg-blue-950/60",
+                  "h-2.5 w-2.5 rounded-full",
+                  getResultDotClass(predicted, isCorrect),
                 )}
-              >
-                {label}
-              </Button>
-            );
-          })}
-        </div>
+              />
+            )}
+          </div>
+        ) : (
+          <div className="flex shrink-0 items-center gap-1.5">
+            {CHOICES.map(({ value, label }) => {
+              const isConfirmed = prediction === value;
+              const isSelected = localChoice === value && !isConfirmed;
 
-        {/* Away */}
-        <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+              return (
+                <Button
+                  key={value}
+                  onClick={() => handleChoiceClick(value)}
+                  variant={
+                    isConfirmed ? "default" : isSelected ? "outline" : "ghost"
+                  }
+                  size="icon-xs"
+                  className={cn(
+                    "h-7 w-7 rounded-full text-xs font-bold transition-all",
+                    isConfirmed &&
+                      "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+                    isSelected &&
+                      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400",
+                    !isConfirmed &&
+                      !isSelected &&
+                      "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {label}
+                </Button>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="flex flex-1 flex-col items-center gap-2">
+          <span className="relative shrink-0 select-none text-2xl leading-none">
+            <span className="block overflow-hidden rounded-lg shadow-sm">
+              {match.flag_away}
+            </span>
+            {prediction === "away" && <span className={getMarkerClass()} />}
+          </span>
           <span
             className={cn(
-              "text-xs font-bold uppercase truncate text-right transition-colors",
-              prediction === "away"
-                ? "text-primary"
-                : "text-foreground",
+              "max-w-20 wrap-break-word text-balance text-center text-[11px] font-semibold leading-tight",
+              getTeamTextClass("away"),
             )}
           >
-            {match.team_away}
-          </span>
-          <span className="text-xl leading-none select-none shrink-0 relative">
-            {match.flag_away}
-            {prediction === "away" && (
-              <span className="absolute -top-1 -left-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white dark:border-zinc-950 animate-in zoom-in duration-300" />
-            )}
+            {match.team_away || "TBD"}
           </span>
         </div>
       </div>
 
-      {/* Confirm button */}
-      {localChoice !== prediction && (
-        <div className="mt-2.5 flex justify-center">
-          <Button onClick={handleConfirm} size="xs">
-            Confirm Prediction
+      {isResultCard && (
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-[10px] tracking-wider text-muted-foreground">
+          {prediction ? (
+            <span className="min-w-0 truncate">
+              Prediction:{" "}
+              <span className={cn("font-bold", resultClass)}>
+                {CHOICE_LABELS[prediction]}
+              </span>
+            </span>
+          ) : (
+            <span>Prediction: None</span>
+          )}
+          <span
+            className={cn(
+              "shrink-0",
+              match.status === "live"
+                ? "text-amber-500 font-semibold animate-pulse"
+                : resultClass,
+            )}
+          >
+            {match.status === "live"
+              ? "Ongoing"
+              : getResultLabel(predicted, isCorrect)}
+          </span>
+        </div>
+      )}
+
+      {!isResultCard && localChoice !== prediction && (
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+          <Button
+            onClick={handleConfirm}
+            size="sm"
+            className="h-6 rounded-full px-4 text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-1 duration-200"
+          >
+            Confirm
           </Button>
         </div>
       )}

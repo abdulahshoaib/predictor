@@ -1,5 +1,6 @@
 "use client";
 import { useMemo } from "react";
+import { Loader2 } from "lucide-react";
 import { MatchCard } from "./match-card";
 import type { Match, PredictionChoice } from "@/lib/types";
 
@@ -51,31 +52,38 @@ export function MatchList({
   onPredict,
   loading,
 }: MatchListProps) {
-  // Only show upcoming (not finished) matches
+  // Only show upcoming (not finished and not live) matches
   const upcomingMatches = useMemo(
-    () => matches.filter((m) => m.status !== "finished"),
+    () => matches.filter((m) => m.status !== "finished" && m.status !== "live"),
     [matches],
   );
 
   const matchesByDate = useMemo(() => {
     const groups: Record<string, Match[]> = {};
-    upcomingMatches.forEach((m) => {
+
+    const sortedMatches = [...upcomingMatches].sort((a, b) => {
+      const timeA = a.time ? new Date(a.time).getTime() : 0;
+      const timeB = b.time ? new Date(b.time).getTime() : 0;
+      return timeA - timeB;
+    });
+
+    sortedMatches.forEach((m) => {
       const key = getLocalDateString(m);
+
+      if (m.team_home === "TBD" || m.team_away === "TBD") return;
+
       if (!groups[key]) groups[key] = [];
       groups[key].push(m);
     });
+
     return groups;
   }, [upcomingMatches]);
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-3">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="h-16 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 animate-pulse"
-          />
-        ))}
+      <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
+        <p className="text-sm font-medium animate-pulse">Loading matches...</p>
       </div>
     );
   }
@@ -89,20 +97,24 @@ export function MatchList({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-10">
       {Object.entries(matchesByDate).map(([date, dateMatches]) => (
-        <section key={date} className="flex flex-col gap-2">
-          <h2 className="text-xs font-medium text-muted-foreground px-1 uppercase tracking-wider">
+        <section key={date} className="flex flex-col gap-3">
+          <h2 className="text-sm font-medium text-white/90 px-1 tracking-wider">
             {formatDate(date)}
           </h2>
-          {dateMatches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              prediction={predictions[match.id]}
-              onPredict={onPredict}
-            />
-          ))}
+
+          {/* Added grid container here */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {dateMatches.map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                prediction={predictions[match.id]}
+                onPredict={onPredict}
+              />
+            ))}
+          </div>
         </section>
       ))}
     </div>

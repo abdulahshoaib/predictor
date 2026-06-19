@@ -12,7 +12,7 @@ async function PredictionsContent() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-8">
+    <main className="mx-auto max-w-5xl px-5 py-8">
       <h1 className="text-2xl font-bold mb-6">Match Predictions</h1>
       <PredictionsTabs />
     </main>

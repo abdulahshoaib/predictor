@@ -6,8 +6,8 @@ export interface Match {
   id: string;
   team_home: string;
   team_away: string;
-  flag_home: string;
-  flag_away: string;
+  flag_home: React.ReactNode;
+  flag_away: React.ReactNode;
   match_date: string;
   time?: string | null;
   stadium?: string | null;
