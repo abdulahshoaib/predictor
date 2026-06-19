@@ -3,6 +3,8 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/providers";
+import Background from "@/components/background";
+import Footer from "@/components/footer";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,8 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("font-sans antialiased", manrope.variable)}>
-        <Providers>{children}</Providers>
+      <body
+        className={cn(
+          "overflow-x-hidden font-sans antialiased",
+          manrope.variable,
+        )}
+      >
+        <Providers>
+          <Background />
+          {children}
+        </Providers>
+        <Footer />
       </body>
     </html>
   );

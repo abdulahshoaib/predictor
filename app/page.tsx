@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
+import { Button } from "@/components/ui/button";
 
 async function HomeAuthCheck() {
   const supabase = await createClient();
@@ -21,7 +22,7 @@ async function HomeAuthCheck() {
 
 export default async function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col text-foreground">
       <Suspense fallback={null}>
         <HomeAuthCheck />
       </Suspense>
@@ -59,7 +60,12 @@ export default async function Home() {
       {/* Footer */}
       <footer className="w-full border-t border-zinc-200 dark:border-zinc-800 mt-auto">
         <div className="max-w-3xl mx-auto px-5 py-6 flex items-center justify-between text-xs text-muted-foreground">
-          <p>© 2026 World Cup Predictor. All rights reserved.</p>
+          <p>
+            {"checkout other cool stuff by "}
+            <Button variant="link" className="p-0 m-0 text-foreground">
+              <a href="abdullahshoaib.dev">@abdullah</a>
+            </Button>
+          </p>
           <ThemeSwitcher />
         </div>
       </footer>
