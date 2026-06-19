@@ -6,7 +6,6 @@ import { ArrowRight } from "lucide-react";
 export default function Maintenance() {
   return (
     <div className="relative flex min-h-svh w-full items-center justify-center overflow-hidden bg-background p-6 md:p-10">
-      {/* Localized smooth gradient background elements */}
       <div className="pointer-events-none absolute -top-20 -right-20 h-96 w-96 rounded-full bg-emerald-500/20 blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-32 -left-32 h-112 w-md rounded-full bg-teal-500/10 blur-[120px]" />
 
