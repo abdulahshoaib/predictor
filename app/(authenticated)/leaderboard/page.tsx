@@ -6,6 +6,7 @@ import { LeaderboardVisibilityToggle } from "@/components/leaderboard/leaderboar
 import type { LeaderboardEntry } from "@/lib/types";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
+import { Info } from "lucide-react";
 
 async function LeaderboardContent() {
   const supabase = await createClient();
@@ -87,7 +88,7 @@ async function LeaderboardContent() {
       entries = usersRes.data.map((user) => {
         const stats = userStats.get(user.id) || { correct: 0, total: 0 };
         return {
-          rank: 0, // Assigned below
+          rank: 0,
           user_id: user.id,
           display_name: user.username || "Anonymous",
           total_score: Number(user.points || 0),
@@ -117,7 +118,10 @@ async function LeaderboardContent() {
     <main className="mx-auto max-w-5xl px-5 py-8 flex flex-col md:flex-row gap-8 items-start">
       <div className="flex-1 w-full max-w-3xl">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Leaderboard</h1>
+          <div className="flex flex-row justify-center item-center">
+            <h1 className="text-2xl font-bold">Leaderboard</h1>
+            <Info />
+          </div>
           <LeaderboardVisibilityToggle />
         </div>
         <LeaderboardTable
