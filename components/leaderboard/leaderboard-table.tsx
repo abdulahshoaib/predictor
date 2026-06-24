@@ -1,14 +1,14 @@
+import { LeaderboardEntry } from "@/types/leaderboard";
 import { LeaderboardRow } from "./leaderboard-row";
-import type { LeaderboardEntry } from "@/lib/types";
 
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[];
-  currentUserId: string;
+  user_name: string;
 }
 
 export function LeaderboardTable({
   entries,
-  currentUserId,
+  user_name,
 }: LeaderboardTableProps) {
   if (entries.length === 0) {
     return (
@@ -34,7 +34,7 @@ export function LeaderboardTable({
         <LeaderboardRow
           key={entry.user_id}
           entry={entry}
-          isCurrentUser={entry.user_id === currentUserId}
+          isCurrentUser={entry.user_name === user_name}
         />
       ))}
     </div>
