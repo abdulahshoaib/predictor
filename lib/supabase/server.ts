@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 /**
@@ -45,17 +46,14 @@ export async function getJWT() {
   return session?.access_token;
 }
 
-export async function getUID() {
+export async function requireUser() {
   const supabase = await createClient();
+
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
-  if (error || !user) {
-    console.error("No user logged in");
-    return null;
-  }
+  if (!user) redirect("/auth/login");
 
-  return user.id;
+  return { supabase, user };
 }
