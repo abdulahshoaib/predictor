@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { Match } from "@/types/matches";
 
 export async function GET() {
   const supabase = await createClient();
 
-  const { data: claims, error: authError } =
-    await supabase.auth.getClaims();
+  const { data: claims, error: authError } = await supabase.auth.getClaims();
 
   if (authError || !claims?.claims) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,5 +20,16 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(matches ?? []);
+  const now = Date.now();
+
+  const upcoming =
+    matches.filter((m: Match) => new Date(m.time).getTime() > now) ?? [];
+
+  const fulltime =
+    matches.filter((m: Match) => new Date(m.time).getTime() <= now) ?? [];
+
+  return NextResponse.json({
+    upcoming: upcoming,
+    predicted: fulltime,
+  });
 }
