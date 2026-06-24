@@ -1,29 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import type { Match, PredictionChoice } from "@/lib/types";
+import { cn, formatTime } from "@/lib/utils";
+import { Match } from "@/types/matches";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-function formatTime(isoString: string) {
-  try {
-    const date = new Date(isoString);
-    return date.toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return "";
-  }
-}
+import { PredictionChoice } from "@/types/predictions";
 
 function getPredictionLabel(
   prediction: PredictionChoice,
   match: Match,
 ): string {
-  if (prediction === "home") return match.team_home;
-  if (prediction === "away") return match.team_away;
+  if (prediction === "home") return match.home_team;
+  if (prediction === "away") return match.away_team;
   return "Draw";
 }
 
@@ -31,7 +20,7 @@ type PredictMatchCardProps = {
   mode?: "predict";
   match: Match;
   prediction?: PredictionChoice;
-  onPredict: (matchId: string, choice: PredictionChoice) => void;
+  onPredict: (match_id: number, choice: PredictionChoice) => void;
 };
 
 type ResultMatchCardProps = {
@@ -78,6 +67,7 @@ function getResultLabel(predicted: boolean, isCorrect?: boolean) {
 
 export function MatchCard(props: MatchCardProps) {
   const { match, prediction } = props;
+
   const isResultCard = props.mode === "result";
   const isCorrect = isResultCard ? props.isCorrect : undefined;
   const predicted = Boolean(prediction);
@@ -115,12 +105,12 @@ export function MatchCard(props: MatchCardProps) {
       : "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 animate-in zoom-in duration-300 rounded-full border-2 border-white bg-primary dark:border-zinc-950";
 
   return (
-    <div className="relative flex h-auto min-h-[148px] flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
         <div className="flex min-w-0 items-center gap-1.5">
-          {match.group && (
+          {match.group_name && (
             <span className=" font-semibold tracking-wider">
-              Group {match.group}
+              Group {match.group_name}
             </span>
           )}
         </div>
@@ -158,7 +148,7 @@ export function MatchCard(props: MatchCardProps) {
               getTeamTextClass("home"),
             )}
           >
-            {match.team_home || "TBD"}
+            {match.home_team || "TBD"}
           </span>
         </div>
 
@@ -183,34 +173,36 @@ export function MatchCard(props: MatchCardProps) {
             )}
           </div>
         ) : (
-          <div className="flex shrink-0 items-center gap-1.5">
-            {CHOICES.map(({ value, label }) => {
-              const isConfirmed = prediction === value;
-              const isSelected = localChoice === value && !isConfirmed;
+          <div className="flex shrink-0 flex-col items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {CHOICES.map(({ value, label }) => {
+                const isConfirmed = prediction === value;
+                const isSelected = localChoice === value && !isConfirmed;
 
-              return (
-                <Button
-                  key={value}
-                  onClick={() => handleChoiceClick(value)}
-                  variant={
-                    isConfirmed ? "default" : isSelected ? "outline" : "ghost"
-                  }
-                  size="icon-xs"
-                  className={cn(
-                    "h-7 w-7 rounded-full text-xs font-bold transition-all",
-                    isConfirmed &&
-                      "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
-                    isSelected &&
-                      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400",
-                    !isConfirmed &&
-                      !isSelected &&
-                      "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  {label}
-                </Button>
-              );
-            })}
+                return (
+                  <Button
+                    key={value}
+                    onClick={() => handleChoiceClick(value)}
+                    variant={
+                      isConfirmed ? "default" : isSelected ? "outline" : "ghost"
+                    }
+                    size="icon-xs"
+                  >
+                    {label}
+                  </Button>
+                );
+              })}
+            </div>
+
+            {!isResultCard && localChoice !== prediction && (
+              <Button
+                onClick={handleConfirm}
+                size="sm"
+                className="h-6 px-4 text-xs"
+              >
+                Confirm
+              </Button>
+            )}
           </div>
         )}
 
@@ -227,7 +219,7 @@ export function MatchCard(props: MatchCardProps) {
               getTeamTextClass("away"),
             )}
           >
-            {match.team_away || "TBD"}
+            {match.away_team || "TBD"}
           </span>
         </div>
       </div>
@@ -256,18 +248,6 @@ export function MatchCard(props: MatchCardProps) {
               ? "Ongoing"
               : getResultLabel(predicted, isCorrect)}
           </span>
-        </div>
-      )}
-
-      {!isResultCard && localChoice !== prediction && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-          <Button
-            onClick={handleConfirm}
-            size="sm"
-            className="h-6 rounded-full px-4 text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-bottom-1 duration-200"
-          >
-            Confirm
-          </Button>
         </div>
       )}
     </div>

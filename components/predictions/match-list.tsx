@@ -2,7 +2,6 @@
 import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { MatchCard } from "./match-card";
-import type { Match, PredictionChoice } from "@/lib/types";
 
 function getLocalDateString(match: Match): string {
   if (match.time) {
@@ -42,7 +41,7 @@ function formatDate(dateString: string): string {
 interface MatchListProps {
   matches: Match[];
   predictions: Record<string, PredictionChoice>;
-  onPredict: (matchId: string, choice: PredictionChoice) => void;
+  onPredict: (match_id: number, choice: PredictionChoice) => void;
   loading: boolean;
 }
 
@@ -53,6 +52,7 @@ export function MatchList({
   loading,
 }: MatchListProps) {
   // Only show upcoming (not finished and not live) matches
+
   const upcomingMatches = useMemo(
     () => matches.filter((m) => m.status !== "finished" && m.status !== "live"),
     [matches],
@@ -70,7 +70,7 @@ export function MatchList({
     sortedMatches.forEach((m) => {
       const key = getLocalDateString(m);
 
-      if (m.team_home === "TBD" || m.team_away === "TBD") return;
+      if (m.home_team === "TBD" || m.away_team === "TBD") return;
 
       if (!groups[key]) groups[key] = [];
       groups[key].push(m);
@@ -83,7 +83,7 @@ export function MatchList({
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-        <p className="text-sm font-medium animate-pulse">Loading matches...</p>
+        <p className="text-sm font-medium">Loading matches...</p>
       </div>
     );
   }
