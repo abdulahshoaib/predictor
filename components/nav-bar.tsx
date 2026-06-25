@@ -36,8 +36,10 @@ export function NavBar() {
     [leaderboard, user_name],
   );
 
+  console.log(me);
+
   const rank = me?.rank ?? 0;
-  const points = me?.total_score ?? 0;
+  const points = me?.total_points ?? 0;
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white text-zinc-900 dark:border-zinc-200/10 dark:bg-black dark:text-zinc-100">

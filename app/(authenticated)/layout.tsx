@@ -7,12 +7,12 @@ export default async function AuthenticatedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen text-foreground">
-      <Providers>
-        {" "}
-        <NavBar />
-        {children}
-      </Providers>
-    </div>
+    <Providers>
+      {" "}
+      <NavBar />
+      <main className="mx-auto max-w-5xl px-5 py-8">
+        <div className="mx-auto w-full max-w-3xl">{children}</div>
+      </main>
+    </Providers>
   );
 }
