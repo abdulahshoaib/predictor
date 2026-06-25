@@ -89,9 +89,9 @@ function Column({
 
       {users.length > 0 ? (
         <ul className="flex flex-col gap-0.5">
-          {users.map((user, i) => (
+          {users.map((user) => (
             <li
-              key={i}
+              key={user.name}
               className="flex items-center justify-between rounded px-1 py-0.5 text-xs hover:bg-muted"
             >
               <span className="truncate text-muted-foreground">
