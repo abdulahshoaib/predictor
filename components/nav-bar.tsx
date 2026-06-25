@@ -18,11 +18,12 @@ import wc26Logo from "@/app/wc26.png";
 import { useUserContext } from "@/context/userContext";
 import { useLeaderboardContext } from "@/context/leaderboardContext";
 import { useMemo } from "react";
-import { CalendarCheck, Trophy } from "@phosphor-icons/react";
+import { CalendarCheck, Table, Trophy } from "@phosphor-icons/react";
 
 const NAV_LINKS = [
   { href: "/predictions", label: "Predictions", icon: CalendarCheck },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/groupstandings", label: "Standings", icon: Table },
 ];
 
 export function NavBar() {
