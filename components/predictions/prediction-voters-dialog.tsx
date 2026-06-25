@@ -18,9 +18,9 @@ interface PredictionVotersDialogProps {
 export function PredictionVotersDialog({
   predictions,
 }: PredictionVotersDialogProps) {
-  const home = predictions.filter((p) => p.prediction_choice === "home");
-  const draw = predictions.filter((p) => p.prediction_choice === "draw");
-  const away = predictions.filter((p) => p.prediction_choice === "away");
+  const home = predictions.filter((p): p is Prediction & { user_id: string } => p.prediction_choice === "home" && p.user_id != null);
+  const draw = predictions.filter((p): p is Prediction & { user_id: string } => p.prediction_choice === "draw" && p.user_id != null);
+  const away = predictions.filter((p): p is Prediction & { user_id: string } => p.prediction_choice === "away" && p.user_id != null);
 
   return (
     <Dialog>
