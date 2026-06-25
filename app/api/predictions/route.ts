@@ -6,7 +6,7 @@ export async function GET() {
 
   const { data: predictions, error } = await supabase
     .from("prediction_details")
-    .select("id, created_at, match_id, user_id, status, prediction_choice, points_earned, username as user_name");
+    .select("*");
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await supabase
       .from("prediction_details")
-      .select("id, created_at, match_id, user_id, status, prediction_choice, points_earned, username as user_name")
+      .select("*")
       .eq("user_id", user_id)
       .eq("match_id", match_id)
       .single();
