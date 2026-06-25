@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Prediction } from "@/types/predictions";
-import { choice_labels } from "@/lib/utils";
+import { choice_labels, cn } from "@/lib/utils";
 
 interface PredictionVotersDialogProps {
   predictions: Prediction[];
@@ -30,28 +30,34 @@ export function PredictionVotersDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg">
+      <DialogContent className="sm:max-w-xl md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Prediction Details</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Column
             label={choice_labels.home}
-            count={home.length}
-            users={home.map((p) => p.user_name)}
+            users={home.map((p) => ({
+              name: p.user_name,
+              points: p.points_earned,
+            }))}
             dotClass="bg-emerald-500"
           />
           <Column
             label={choice_labels.draw}
-            count={draw.length}
-            users={draw.map((p) => p.user_name)}
+            users={draw.map((p) => ({
+              name: p.user_name,
+              points: p.points_earned,
+            }))}
             dotClass="bg-amber-400"
           />
           <Column
             label={choice_labels.away}
-            count={away.length}
-            users={away.map((p) => p.user_name)}
+            users={away.map((p) => ({
+              name: p.user_name,
+              points: p.points_earned,
+            }))}
             dotClass="bg-sky-500"
           />
         </div>
@@ -62,13 +68,11 @@ export function PredictionVotersDialog({
 
 function Column({
   label,
-  count,
   users,
   dotClass,
 }: {
   label: string;
-  count: number;
-  users: string[];
+  users: { name: string; points?: number | null }[];
   dotClass: string;
 }) {
   return (
@@ -77,18 +81,38 @@ function Column({
         <span className={`h-2.5 w-2.5 rounded-full ${dotClass}`} />
         <span className="text-sm font-semibold">
           {label}{" "}
-          <span className="font-normal text-muted-foreground">({count})</span>
+          <span className="font-normal text-muted-foreground">
+            ({users.length})
+          </span>
         </span>
       </div>
 
       {users.length > 0 ? (
         <ul className="flex flex-col gap-0.5">
-          {users.map((name, i) => (
+          {users.map((user, i) => (
             <li
               key={i}
-              className="truncate rounded px-1 py-0.5 text-xs text-muted-foreground hover:bg-muted"
+              className="flex items-center justify-between rounded px-1 py-0.5 text-xs hover:bg-muted"
             >
-              {name}
+              <span className="truncate text-muted-foreground">
+                {user.name}
+              </span>
+
+              {user.points != null && (
+                <span
+                  className={cn(
+                    "shrink-0 font-semibold tabular-nums",
+                    user.points > 0
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : user.points < 0
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-zinc-600 dark:text-zinc-400",
+                  )}
+                >
+                  {user.points > 0 ? "+" : ""}
+                  {user.points}pt
+                </span>
+              )}
             </li>
           ))}
         </ul>
