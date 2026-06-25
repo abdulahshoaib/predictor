@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 import { getTeamFlag } from "@/lib/flags";
 import { GroupStandings } from "@/types/group_standing";
 import { ThirdPlacedTable } from "@/components/groupstandings/third-placed-table";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { TeamDialog } from "@/components/groupstandings/team-details";
+import { Button } from "@/components/ui/button";
 
 function GroupTable({
   groupName,
@@ -52,14 +55,22 @@ function GroupTable({
               <TableCell className="text-center text-muted-foreground">
                 {entry.position}
               </TableCell>
-              <TableCell className="font-medium">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center">
-                    {getTeamFlag(entry.team)}
-                  </span>
-                  <span>{entry.team}</span>
-                </div>
+
+              <TableCell>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="link" className="text-foreground">
+                      <span className="flex h-5 w-5 items-center justify-center">
+                        {getTeamFlag(entry.team)}
+                      </span>
+                      <span>{entry.team}</span>
+                    </Button>
+                  </DialogTrigger>
+
+                  <TeamDialog team={entry.team} />
+                </Dialog>
               </TableCell>
+
               <TableCell className="text-center">{entry.played}</TableCell>
               <TableCell className="text-center">{entry.wins}</TableCell>
               <TableCell className="text-center">{entry.draws}</TableCell>

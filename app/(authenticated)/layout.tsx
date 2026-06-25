@@ -10,8 +10,8 @@ export default async function AuthenticatedLayout({
     <Providers>
       {" "}
       <NavBar />
-      <main className="mx-auto max-w-5xl px-5 py-8">
-        <div className="mx-auto w-full max-w-3xl">{children}</div>
+      <main className="mx-auto max-w-4xl px-5 py-8">
+        <div className="mx-auto w-full max-w-5xl">{children}</div>
       </main>
     </Providers>
   );

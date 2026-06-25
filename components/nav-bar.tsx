@@ -22,8 +22,8 @@ import { CalendarCheck, Table, Trophy } from "@phosphor-icons/react";
 
 const NAV_LINKS = [
   { href: "/predictions", label: "Predictions", icon: CalendarCheck },
+  { href: "/groupstandings", label: "Groups", icon: Table },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { href: "/groupstandings", label: "Standings", icon: Table },
 ];
 
 export function NavBar() {

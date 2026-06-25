@@ -8,6 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { TeamDialog } from "@/components/groupstandings/team-details";
 import { cn } from "@/lib/utils";
 import { getTeamFlag } from "@/lib/flags";
 import { GroupStandings } from "@/types/group_standing";
@@ -31,6 +34,7 @@ export function ThirdPlacedTable({ allTeams }: { allTeams: GroupStandings[] }) {
           <TableRow>
             <TableHead className="w-8 text-center">#</TableHead>
             <TableHead>Team</TableHead>
+            <TableHead className="w-12 text-center">Pts</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -48,14 +52,24 @@ export function ThirdPlacedTable({ allTeams }: { allTeams: GroupStandings[] }) {
                   {idx + 1}
                 </TableCell>
                 <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center">
-                      {getTeamFlag(entry.team)}
-                    </span>
-                    <span>
-                      {entry.team.replace("Bosnia and Herzegovina", "Bosnia")}
-                    </span>
-                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="text-foreground">
+                        <div className="flex items-center gap-2">
+                          <span className="flex h-5 w-5 items-center justify-center">
+                            {getTeamFlag(entry.team)}
+                          </span>
+                          <span>
+                            {entry.team.replace("Bosnia and Herzegovina", "Bosnia")}
+                          </span>
+                        </div>
+                      </Button>
+                    </DialogTrigger>
+                    <TeamDialog team={entry.team} />
+                  </Dialog>
+                </TableCell>
+                <TableCell className="text-center font-bold tabular-nums">
+                  {entry.points}
                 </TableCell>
               </TableRow>
             );

@@ -9,7 +9,7 @@ export interface Match {
   status: MatchStatus;
   stage: string | null;
   group_name: string;
-  winner: string | null;
+  result: string | null;
   score_line: string | null;
 
   /*

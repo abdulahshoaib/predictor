@@ -95,28 +95,24 @@ export function MatchCard(props: MatchCardProps) {
   return (
     <div className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-        <div className="flex min-w-0 items-center gap-1.5">
+        <div className="flex min-w-0 flex-col gap-0.5">
           {match.group_name && (
-            <span className=" font-semibold tracking-wider">
+            <span className="font-semibold tracking-wider">
               Group {match.group_name}
+            </span>
+          )}
+          {!isResultCard && match.stadium && (
+            <span className="truncate text-[11px] text-muted-foreground">
+              {match.stadium}
             </span>
           )}
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5">
           {match.time && <span>{formatTime(match.time)}</span>}
-          {isResultCard ? (
-            match.status === "completed" ? (
-              <span className="font-semibold text-zinc-400">FT</span>
-            ) : null
-          ) : prediction ? (
-            <Badge
-              variant="secondary"
-              className="h-5 border-emerald-100 bg-emerald-50 px-2 py-0 text-xs text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
-            >
-              ✓ {getPredictionLabel(prediction, match)}
-            </Badge>
-          ) : null}
+          {isResultCard && match.status === "completed" && (
+            <span className="font-semibold text-zinc-400">FT</span>
+          )}
         </div>
       </div>
 
@@ -226,8 +222,18 @@ export function MatchCard(props: MatchCardProps) {
 
       <div className="mt-auto pt-3">
         <PredictionBar predictions={allPredictions ?? []} />
-        <div className="flex justify-end">
-          <PredictionVotersDialog predictions={allPredictions ?? []} />
+        <div className="flex items-center justify-between pt-1">
+          {!isResultCard && prediction && (
+            <Badge
+              variant="secondary"
+              className="h-5 border-emerald-100 bg-emerald-50 px-2 py-0 text-xs text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
+            >
+              ✓ {getPredictionLabel(prediction, match)}
+            </Badge>
+          )}
+          <div className="ml-auto">
+            <PredictionVotersDialog predictions={allPredictions ?? []} />
+          </div>
         </div>
       </div>
 
