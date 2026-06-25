@@ -24,28 +24,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = claims.claims.sub as string;
+  const user_id = claims.claims.sub as string;
 
   const { match_id, prediction_choice } = await request.json();
 
-  const { data, error } = await supabase
-    .from("predictions")
-    .upsert(
+  try {
+    await supabase.from("predictions").upsert(
       {
-        user_id: userId,
+        user_id: user_id,
         match_id,
         prediction_choice,
       },
       {
         onConflict: "user_id,match_id",
       },
-    )
-    .select()
-    .single();
+    );
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const { data, error } = await supabase
+      .from("prediction_details")
+      .select("*")
+      .eq("user_id", user_id)
+      .eq("match_id", match_id)
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.log(error);
   }
-
-  return NextResponse.json(data);
 }

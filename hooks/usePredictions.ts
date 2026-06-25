@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { fetchPredictions, savePrediction } from "@/services/prediction";
 import { Prediction, PredictionChoice } from "@/types/predictions";
+import { createClient } from "@/lib/supabase/client";
 
 export function usePredictions() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [allPredictions, setAllPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,6 +16,7 @@ export function usePredictions() {
 
       const data = await fetchPredictions();
       setPredictions(data);
+      setAllPredictions(data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load predictions",
@@ -22,6 +25,29 @@ export function usePredictions() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("predictions")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "predictions",
+        },
+        async () => {
+          const latest = await fetchPredictions();
+          setAllPredictions(latest);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   useEffect(() => {
     refreshPredictions();
@@ -51,12 +77,11 @@ export function usePredictions() {
     });
 
     try {
-      const savedPrediction = await savePrediction(match_id, choice);
+      await savePrediction(match_id, choice);
 
-      setPredictions((prev) => [
-        ...prev.filter((p) => p.match_id !== match_id),
-        savedPrediction,
-      ]);
+      const data = await fetchPredictions();
+      setPredictions(data);
+      setAllPredictions(data);
     } catch (error) {
       setPredictions(previousPredictions);
 
@@ -66,6 +91,7 @@ export function usePredictions() {
 
   return {
     predictions,
+    allPredictions,
     loading,
     submitPrediction,
     error,
