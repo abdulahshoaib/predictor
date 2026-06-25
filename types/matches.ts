@@ -1,4 +1,4 @@
-export type MatchStatus = "upcoming" | "live" | "finished";
+export type MatchStatus = "scheduled" | "ongoing" | "completed";
 
 export interface Match {
   id: number;

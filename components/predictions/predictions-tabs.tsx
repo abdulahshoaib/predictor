@@ -51,8 +51,8 @@ export function PredictionsTabs() {
       [...upcoming]
         .filter(
           (m) =>
-            m.status !== "finished" &&
-            m.status !== "live" &&
+            m.status !== "completed" &&
+            m.status !== "ongoing" &&
             m.home_team !== "TBD" &&
             m.away_team !== "TBD",
         )
@@ -71,7 +71,10 @@ export function PredictionsTabs() {
           return {
             ...match,
             prediction: prediction?.prediction_choice,
-            isCorrect: prediction?.status === "correct",
+            isCorrect:
+              match.status === "completed"
+                ? prediction?.status === "correct"
+                : undefined,
           };
         })
         .sort(

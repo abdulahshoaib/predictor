@@ -66,16 +66,27 @@ export function MatchCard(props: MatchCardProps) {
   };
 
   const getTeamTextClass = (choice: PredictionChoice) => {
-    if (!isResultCard || prediction !== choice) return "text-foreground";
+    if (
+      !isResultCard ||
+      match.status !== "completed" ||
+      prediction !== choice
+    ) {
+      return "text-foreground";
+    }
+
     return resultClass;
   };
 
   const getMarkerClass = () =>
     isResultCard
-      ? cn(
-          "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-950",
-          getResultDotClass(predicted, isCorrect),
-        )
+      ? match.status !== "completed"
+        ? cn(
+            "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white bg-amber-500 dark:border-zinc-950",
+          )
+        : cn(
+            "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-950",
+            getResultDotClass(predicted, isCorrect),
+          )
       : "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 animate-in zoom-in duration-300 rounded-full border-2 border-white bg-primary dark:border-zinc-950";
 
   return (
@@ -92,11 +103,9 @@ export function MatchCard(props: MatchCardProps) {
         <div className="flex shrink-0 items-center gap-1.5">
           {match.time && <span>{formatTime(match.time)}</span>}
           {isResultCard ? (
-            match.status === "live" ? (
-              <></>
-            ) : (
+            match.status === "completed" ? (
               <span className="font-semibold text-zinc-400">FT</span>
-            )
+            ) : null
           ) : prediction ? (
             <Badge
               variant="secondary"
@@ -132,9 +141,13 @@ export function MatchCard(props: MatchCardProps) {
               <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-sm tracking-wide text-zinc-900 dark:bg-zinc-800/40 dark:text-zinc-50">
                 {match.score_line.replace("-", " – ")}
               </div>
+            ) : match.status === "ongoing" ? (
+              <div className="animate-pulse rounded-md bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:bg-amber-950/30 dark:text-amber-400">
+                Live
+              </div>
             ) : (
               <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground dark:bg-zinc-800/40">
-                {match.status === "live" ? "Live" : "FT"}
+                FT
               </div>
             )}
             {prediction === "draw" && (
@@ -220,14 +233,14 @@ export function MatchCard(props: MatchCardProps) {
           <span
             className={cn(
               "shrink-0",
-              match.status === "live"
-                ? "text-amber-500 font-semibold animate-pulse"
+              match.status !== "completed"
+                ? "text-amber-500 font-semibold"
                 : resultClass,
             )}
           >
-            {match.status === "live"
-              ? "Ongoing"
-              : getResultLabel(predicted, isCorrect)}
+            {match.status === "completed"
+              ? getResultLabel(predicted, isCorrect)
+              : "Ongoing"}
           </span>
         </div>
       )}
