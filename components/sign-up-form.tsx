@@ -59,8 +59,7 @@ export function SignUpForm({
           .from('users')
           .insert({
             id: data.user.id,
-            username: username.trim().toLowerCase(),
-            points: 0
+            user_name: username.trim().toLowerCase(),
           });
         if (profileError) {
           console.error("Error creating user profile in users table:", profileError.message);

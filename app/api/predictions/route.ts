@@ -6,7 +6,7 @@ export async function GET() {
 
   const { data: predictions, error } = await supabase
     .from("prediction_details")
-    .select("*");
+    .select("*", { count: "exact" });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const { match_id, prediction_choice } = await request.json();
 
   try {
-    await supabase.from("predictions").upsert(
+    const { error: upsertError } = await supabase.from("predictions").upsert(
       {
         user_id: user_id,
         match_id,
@@ -39,6 +39,10 @@ export async function POST(request: NextRequest) {
         onConflict: "user_id,match_id",
       },
     );
+
+    if (upsertError) {
+      return NextResponse.json({ error: upsertError.message }, { status: 500 });
+    }
 
     const { data, error } = await supabase
       .from("prediction_details")
@@ -54,7 +58,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 },
     );
   }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import {
   choice_labels,
   choices,
@@ -26,6 +27,7 @@ type PredictMatchCardProps = Base & {
   mode?: "predict";
   match: Match;
   prediction?: PredictionChoice;
+  submitting?: boolean;
   onPredict: (match_id: number, choice: PredictionChoice) => void;
   allPredictions?: Prediction[];
 };
@@ -43,6 +45,7 @@ export function MatchCard(props: MatchCardProps) {
   const { match, prediction, allPredictions } = props;
 
   const isResultCard = props.mode === "result";
+  const submitting = !isResultCard ? props.submitting : false;
   const isCorrect = isResultCard ? props.isCorrect : undefined;
   const predicted = Boolean(prediction);
   const resultClass = getResultClass(predicted, isCorrect);
@@ -59,9 +62,9 @@ export function MatchCard(props: MatchCardProps) {
     setLocalChoice(choice);
   };
 
-  const handleConfirm = () => {
-    if (!isResultCard && localChoice) {
-      props.onPredict(match.id, localChoice);
+  const handleConfirm = async () => {
+    if (!isResultCard && localChoice && !submitting) {
+      await props.onPredict(match.id, localChoice);
     }
   };
 
@@ -154,7 +157,9 @@ export function MatchCard(props: MatchCardProps) {
               <span
                 className={cn(
                   "h-2.5 w-2.5 rounded-full",
-                  getResultDotClass(predicted, isCorrect),
+                  match.status !== "completed"
+                    ? "bg-amber-500"
+                    : getResultDotClass(predicted, isCorrect),
                 )}
               />
             )}
@@ -184,10 +189,18 @@ export function MatchCard(props: MatchCardProps) {
             {!isResultCard && localChoice !== prediction && (
               <Button
                 onClick={handleConfirm}
+                disabled={submitting}
                 size="sm"
                 className="h-6 px-4 text-xs"
               >
-                Confirm
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Saving
+                  </>
+                ) : (
+                  "Confirm"
+                )}
               </Button>
             )}
           </div>

@@ -1,6 +1,7 @@
 import { fetchGroupStandings } from "@/services/group_standings";
 import { GroupStandings } from "@/types/group_standing";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function useGroupStandings() {
   const [groupStandings, setGroupStandings] = useState<GroupStandings[]>([]);
@@ -19,6 +20,7 @@ export function useGroupStandings() {
       setError(
         error instanceof Error ? error.message : "Failed to Group Standings",
       );
+      toast.error("Failed to load group standings");
     } finally {
       setLoading(false);
     }

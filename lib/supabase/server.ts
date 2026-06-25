@@ -55,5 +55,18 @@ export async function requireUser() {
 
   if (!user) redirect("/auth/login");
 
+  const { data: existing } = await supabase
+    .from("users")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!existing) {
+    await supabase.from("users").insert({
+      id: user.id,
+      user_name: user.user_metadata?.username ?? `user_${user.id.slice(0, 8)}`,
+    });
+  }
+
   return { supabase, user };
 }

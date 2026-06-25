@@ -1,6 +1,7 @@
 import { fetchLeaderboard } from "@/services/leaderboard";
 import { Leaderboard } from "@/types/leaderboard";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function useLeaderboard() {
   const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
@@ -19,6 +20,7 @@ export function useLeaderboard() {
       setError(
         error instanceof Error ? error.message : "Failed to load leaderboard",
       );
+      toast.error("Failed to load leaderboard");
     } finally {
       setLoading(false);
     }

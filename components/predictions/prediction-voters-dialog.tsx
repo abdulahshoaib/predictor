@@ -39,6 +39,7 @@ export function PredictionVotersDialog({
           <Column
             label={choice_labels.home}
             users={home.map((p) => ({
+              id: p.user_id,
               name: p.user_name,
               points: p.points_earned,
             }))}
@@ -47,6 +48,7 @@ export function PredictionVotersDialog({
           <Column
             label={choice_labels.draw}
             users={draw.map((p) => ({
+              id: p.user_id,
               name: p.user_name,
               points: p.points_earned,
             }))}
@@ -55,6 +57,7 @@ export function PredictionVotersDialog({
           <Column
             label={choice_labels.away}
             users={away.map((p) => ({
+              id: p.user_id,
               name: p.user_name,
               points: p.points_earned,
             }))}
@@ -72,7 +75,7 @@ function Column({
   dotClass,
 }: {
   label: string;
-  users: { name: string; points?: number | null }[];
+  users: { id: string; name: string; points?: number | null }[];
   dotClass: string;
 }) {
   return (
@@ -91,7 +94,7 @@ function Column({
         <ul className="flex flex-col gap-0.5">
           {users.map((user) => (
             <li
-              key={user.name}
+              key={user.id}
               className="flex items-center justify-between rounded px-1 py-0.5 text-xs hover:bg-muted"
             >
               <span className="truncate text-muted-foreground">

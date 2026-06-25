@@ -1,12 +1,17 @@
+"use client";
+
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { fetchPredictions, savePrediction } from "@/services/prediction";
 import { Prediction, PredictionChoice } from "@/types/predictions";
 import { createClient } from "@/lib/supabase/client";
 
 export function usePredictions() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [allPredictions, setAllPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submittingMatchId, setSubmittingMatchId] = useState<number | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   async function refreshPredictions() {
@@ -16,11 +21,11 @@ export function usePredictions() {
 
       const data = await fetchPredictions();
       setPredictions(data);
-      setAllPredictions(data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load predictions",
       );
+      toast.error("Failed to load predictions");
     } finally {
       setLoading(false);
     }
@@ -38,8 +43,12 @@ export function usePredictions() {
           table: "predictions",
         },
         async () => {
-          const latest = await fetchPredictions();
-          setAllPredictions(latest);
+          try {
+            const latest = await fetchPredictions();
+            setPredictions(latest);
+          } catch {
+            // fetchPredictions failure on real-time sync is non-critical
+          }
         },
       )
       .subscribe();
@@ -54,46 +63,27 @@ export function usePredictions() {
   }, []);
 
   async function submitPrediction(match_id: number, choice: PredictionChoice) {
-    const previousPredictions = [...predictions];
-
-    // Optimistic update
-    setPredictions((prev) => {
-      const existing = prev.find((p) => p.match_id === match_id);
-
-      if (existing) {
-        return prev.map((p) =>
-          p.match_id === match_id ? { ...p, prediction_choice: choice } : p,
-        );
-      }
-
-      return [
-        ...prev,
-        {
-          id: -Date.now(),
-          match_id,
-          prediction_choice: choice,
-          user_name: "",
-        } as Prediction,
-      ];
-    });
+    setSubmittingMatchId(match_id);
 
     try {
       await savePrediction(match_id, choice);
 
       const data = await fetchPredictions();
       setPredictions(data);
-      setAllPredictions(data);
+      toast.success("Prediction saved");
     } catch (error) {
-      setPredictions(previousPredictions);
+      toast.error("Failed to save prediction");
 
       setError(error instanceof Error ? error.message : "Failed to Predict");
+    } finally {
+      setSubmittingMatchId(null);
     }
   }
 
   return {
     predictions,
-    allPredictions,
     loading,
+    submittingMatchId,
     submitPrediction,
     error,
   };

@@ -19,23 +19,29 @@ type PredictedMatch = Match & {
 };
 
 export function PredictionsTabs() {
-  const { upcoming, fulltime, loading } = useMatchContext();
-  const { predictions, allPredictions, submitPrediction } =
-    usePredictionsContext();
+  const { upcoming, fulltime, loading: matchesLoading } = useMatchContext();
+  const {
+    predictions,
+    loading: predictionsLoading,
+    submittingMatchId,
+    submitPrediction,
+  } = usePredictionsContext();
   const { user } = useUserContext();
 
-  const predictionMap = useMemo(
-    () =>
-      new Map(
-        predictions
-          .filter((p) => p.user_id === user?.id)
-          .map((p) => [p.match_id, p]),
-      ),
+  const loading = matchesLoading || predictionsLoading;
+
+  const userPredictions = useMemo(
+    () => predictions.filter((p) => p.user_id === user?.id),
     [predictions, user?.id],
   );
 
+  const predictionMap = useMemo(
+    () => new Map(userPredictions.map((p) => [p.match_id, p])),
+    [userPredictions],
+  );
+
   const predictionsByMatch = useMemo(() => {
-    return allPredictions.reduce((map, prediction) => {
+    return predictions.reduce((map, prediction) => {
       if (!map.has(prediction.match_id)) {
         map.set(prediction.match_id, []);
       }
@@ -44,7 +50,7 @@ export function PredictionsTabs() {
 
       return map;
     }, new Map<number, typeof predictions>());
-  }, [allPredictions]);
+  }, [predictions]);
 
   const upcomingMatches = useMemo(
     () =>
@@ -78,8 +84,7 @@ export function PredictionsTabs() {
           };
         })
         .sort(
-          (a, b) =>
-            new Date(b.time).getTime() - new Date(a.time).getTime(),
+          (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
         ),
     [fulltime, predictionMap],
   );
@@ -156,6 +161,7 @@ export function PredictionsTabs() {
                     key={match.id}
                     match={match}
                     prediction={prediction?.prediction_choice}
+                    submitting={submittingMatchId === match.id}
                     onPredict={handlePredict}
                     allPredictions={predictionsByMatch.get(match.id) ?? []}
                   />

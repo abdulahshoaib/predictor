@@ -1,6 +1,7 @@
 import { fetchMatches } from "@/services/matches";
 import { Match } from "@/types/matches";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function useMatches() {
   const [upcoming, setUpcoming] = useState<Match[]>([]);
@@ -19,6 +20,7 @@ export function useMatches() {
       setFullTime(data.predicted);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load matches");
+      toast.error("Failed to load matches");
     } finally {
       setLoading(false);
     }

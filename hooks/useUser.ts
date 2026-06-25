@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { fetchUser } from "@/services/user";
 import { UserProfile } from "@/types/user";
 
@@ -20,6 +21,7 @@ export function useUser() {
         setError(
           error instanceof Error ? error.message : "Failed to load user",
         );
+        toast.error("Failed to load user");
       } finally {
         setLoading(false);
       }
