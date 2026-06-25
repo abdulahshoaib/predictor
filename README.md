@@ -1,3 +1,3 @@
 # WC Predictor
 
-The app that is built for automated predictions point calculations
+I mean what u doing here, go to the [website](https://wcpredictor.online)
