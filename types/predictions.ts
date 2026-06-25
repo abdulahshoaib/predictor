@@ -9,5 +9,6 @@ export interface Prediction {
   created_at?: string;
   user_id?: string;
   status?: PredictionStatus;
+  points_earned?: number | null;
   result?: number | null;
 }

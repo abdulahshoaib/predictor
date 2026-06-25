@@ -72,6 +72,7 @@ export function usePredictions() {
           id: -Date.now(),
           match_id,
           prediction_choice: choice,
+          user_name: "",
         } as Prediction,
       ];
     });
