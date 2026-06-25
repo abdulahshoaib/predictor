@@ -30,29 +30,29 @@ export function PredictionVotersDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-sm">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Prediction Details</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <Section
+        <div className="grid grid-cols-3 gap-4">
+          <Column
             label={choice_labels.home}
             count={home.length}
             users={home.map((p) => p.user_name)}
-            barClass="bg-emerald-500"
+            dotClass="bg-emerald-500"
           />
-          <Section
+          <Column
             label={choice_labels.draw}
             count={draw.length}
             users={draw.map((p) => p.user_name)}
-            barClass="bg-amber-400"
+            dotClass="bg-amber-400"
           />
-          <Section
+          <Column
             label={choice_labels.away}
             count={away.length}
             users={away.map((p) => p.user_name)}
-            barClass="bg-sky-500"
+            dotClass="bg-sky-500"
           />
         </div>
       </DialogContent>
@@ -60,21 +60,21 @@ export function PredictionVotersDialog({
   );
 }
 
-function Section({
+function Column({
   label,
   count,
   users,
-  barClass,
+  dotClass,
 }: {
   label: string;
   count: number;
   users: string[];
-  barClass: string;
+  dotClass: string;
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-2">
-        <span className={`h-2.5 w-2.5 rounded-full ${barClass}`} />
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-1.5 border-b pb-1.5">
+        <span className={`h-2.5 w-2.5 rounded-full ${dotClass}`} />
         <span className="text-sm font-semibold">
           {label}{" "}
           <span className="font-normal text-muted-foreground">({count})</span>
@@ -82,13 +82,18 @@ function Section({
       </div>
 
       {users.length > 0 ? (
-        <p className="pl-4 text-xs text-muted-foreground">
-          {users.join(", ")}
-        </p>
+        <ul className="flex flex-col gap-0.5">
+          {users.map((name, i) => (
+            <li
+              key={i}
+              className="truncate rounded px-1 py-0.5 text-xs text-muted-foreground hover:bg-muted"
+            >
+              {name}
+            </li>
+          ))}
+        </ul>
       ) : (
-        <p className="pl-4 text-xs text-muted-foreground italic">
-          No predictions
-        </p>
+        <p className="text-xs italic text-muted-foreground">None</p>
       )}
     </div>
   );
