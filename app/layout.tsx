@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/providers";
+import { ErrorBoundary } from "@/components/error-boundary";
 import Background from "@/components/background";
 import Footer from "@/components/footer";
 
@@ -35,9 +36,11 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <Background />
-          {children}
-          <Footer />
+          <ErrorBoundary>
+            <Background />
+            {children}
+            <Footer />
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>
