@@ -12,7 +12,8 @@ export const hasEnvVars =
   !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 export function formatDate(dateString: string) {
-  const date = new Date(dateString);
+  const [y, m, d] = dateString.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
 
   return date.toLocaleDateString("en-US", {
     weekday: "long",
@@ -41,7 +42,10 @@ export function getDateKey(time?: string) {
 
   if (isNaN(date.getTime())) return "TBD";
 
-  return date.toISOString().split("T")[0];
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 export function groupByDate<T extends { time?: string }>(matches: T[]) {
