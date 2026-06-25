@@ -18,10 +18,11 @@ import wc26Logo from "@/app/wc26.png";
 import { useUserContext } from "@/context/userContext";
 import { useLeaderboardContext } from "@/context/leaderboardContext";
 import { useMemo } from "react";
+import { CalendarCheck, Trophy } from "@phosphor-icons/react";
 
 const NAV_LINKS = [
-  { href: "/predictions", label: "Predictions" },
-  { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/predictions", label: "Predictions", icon: CalendarCheck },
+  { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
 ];
 
 export function NavBar() {
@@ -75,13 +76,14 @@ export function NavBar() {
                       "bg-zinc-100 text-zinc-950 font-semibold dark:bg-zinc-900 dark:text-white",
                   )}
                 >
-                  {link.label}
+                  <link.icon className="size-4 sm:mr-1.5" />
+                  <span className="hidden sm:inline">{link.label}</span>
                 </Link>
               </Button>
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
           {loading ? (
             <div className="h-4 w-20 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded" />
           ) : user_name ? (
@@ -92,7 +94,10 @@ export function NavBar() {
                     className="inline-flex items-center gap-1 rounded-full bg-emerald-50/80 px-2.5 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-100 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/50 dark:hover:bg-emerald-950/60 transition-all cursor-pointer"
                     title="Leaderboard Settings"
                   >
-                    🏆 #{rank} • {points} {points === 1 ? "pt" : "pts"}
+                    <span className="sm:hidden">🏆#{rank}</span>
+                    <span className="hidden sm:inline">
+                      🏆 #{rank} • {points} {points === 1 ? "pt" : "pts"}
+                    </span>
                   </Button>
                 </DialogTrigger>
 
