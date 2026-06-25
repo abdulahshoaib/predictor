@@ -64,15 +64,20 @@ export function PredictionsTabs() {
 
   const predictedMatches = useMemo<PredictedMatch[]>(
     () =>
-      fulltime.map((match) => {
-        const prediction = predictionMap.get(match.id);
+      fulltime
+        .map((match) => {
+          const prediction = predictionMap.get(match.id);
 
-        return {
-          ...match,
-          prediction: prediction?.prediction_choice,
-          isCorrect: prediction?.status === "correct",
-        };
-      }),
+          return {
+            ...match,
+            prediction: prediction?.prediction_choice,
+            isCorrect: prediction?.status === "correct",
+          };
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.time).getTime() - new Date(a.time).getTime(),
+        ),
     [fulltime, predictionMap],
   );
 
@@ -102,7 +107,9 @@ export function PredictionsTabs() {
     mode: "predict" | "result",
     emptyMessage: string,
   ) => {
-    const dates = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+    const dates = Object.keys(groups).sort((a, b) =>
+      mode === "result" ? b.localeCompare(a) : a.localeCompare(b),
+    );
 
     if (dates.length === 0) {
       return (
