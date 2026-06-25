@@ -37,8 +37,6 @@ export function NavBar() {
     [leaderboard, user_name],
   );
 
-  console.log(me);
-
   const rank = me?.rank ?? 0;
   const points = me?.total_points ?? 0;
 
