@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
-import { Button } from "@/components/ui/button";
 
 async function HomeAuthCheck() {
   const supabase = await createClient();
@@ -22,7 +21,7 @@ async function HomeAuthCheck() {
 export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col text-foreground">
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-0" />}>
         <HomeAuthCheck />
       </Suspense>
 
