@@ -1,29 +1,36 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { cn, formatTime } from "@/lib/utils";
-import { Match } from "@/types/matches";
+import {
+  choice_labels,
+  choices,
+  cn,
+  formatTime,
+  getPredictionLabel,
+  getResultClass,
+  getResultDotClass,
+  getResultLabel,
+} from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PredictionChoice } from "@/types/predictions";
+import { Prediction, PredictionChoice } from "@/types/predictions";
+import { PredictionBar } from "./prediction-bar";
+import { PredictionVotersDialog } from "./prediction-voters-dialog";
+import { Match } from "@/types/matches";
 
-function getPredictionLabel(
-  prediction: PredictionChoice,
-  match: Match,
-): string {
-  if (prediction === "home") return match.home_team;
-  if (prediction === "away") return match.away_team;
-  return "Draw";
-}
+type Base = {
+  allPredictions?: Prediction[];
+};
 
-type PredictMatchCardProps = {
+type PredictMatchCardProps = Base & {
   mode?: "predict";
   match: Match;
   prediction?: PredictionChoice;
   onPredict: (match_id: number, choice: PredictionChoice) => void;
+  allPredictions?: Prediction[];
 };
 
-type ResultMatchCardProps = {
+type ResultMatchCardProps = Base & {
   mode: "result";
   match: Match;
   prediction?: PredictionChoice;
@@ -32,41 +39,8 @@ type ResultMatchCardProps = {
 
 type MatchCardProps = PredictMatchCardProps | ResultMatchCardProps;
 
-const CHOICES: { value: PredictionChoice; label: string }[] = [
-  { value: "home", label: "H" },
-  { value: "draw", label: "D" },
-  { value: "away", label: "A" },
-];
-
-const CHOICE_LABELS: Record<PredictionChoice, string> = {
-  home: "Home Win",
-  draw: "Draw",
-  away: "Away Win",
-};
-
-function getResultClass(predicted: boolean, isCorrect?: boolean) {
-  if (!predicted) return "text-zinc-400 dark:text-zinc-500";
-  if (isCorrect === true) return "text-emerald-600 dark:text-emerald-400";
-  if (isCorrect === false) return "text-red-500 dark:text-red-400";
-  return "text-zinc-500";
-}
-
-function getResultDotClass(predicted: boolean, isCorrect?: boolean) {
-  if (!predicted) return "bg-zinc-400";
-  if (isCorrect === true) return "bg-emerald-500";
-  if (isCorrect === false) return "bg-red-500";
-  return "bg-zinc-400";
-}
-
-function getResultLabel(predicted: boolean, isCorrect?: boolean) {
-  if (!predicted) return "Not Predicted";
-  if (isCorrect === true) return "Correct";
-  if (isCorrect === false) return "Wrong";
-  return "Pending";
-}
-
 export function MatchCard(props: MatchCardProps) {
-  const { match, prediction } = props;
+  const { match, prediction, allPredictions } = props;
 
   const isResultCard = props.mode === "result";
   const isCorrect = isResultCard ? props.isCorrect : undefined;
@@ -175,7 +149,7 @@ export function MatchCard(props: MatchCardProps) {
         ) : (
           <div className="flex shrink-0 flex-col items-center gap-2">
             <div className="flex items-center gap-1.5">
-              {CHOICES.map(({ value, label }) => {
+              {choices.map(({ value, label }) => {
                 const isConfirmed = prediction === value;
                 const isSelected = localChoice === value && !isConfirmed;
 
@@ -224,13 +198,20 @@ export function MatchCard(props: MatchCardProps) {
         </div>
       </div>
 
+      <div className="mt-auto pt-3">
+        <PredictionBar predictions={allPredictions ?? []} />
+        <div className="flex justify-end">
+          <PredictionVotersDialog predictions={allPredictions ?? []} />
+        </div>
+      </div>
+
       {isResultCard && (
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-xs tracking-wider text-muted-foreground">
+        <div className="flex items-center justify-between gap-2 pt-3 text-xs tracking-wider text-muted-foreground">
           {prediction ? (
             <span className="min-w-0 truncate">
               Prediction:{" "}
               <span className={cn("font-bold", resultClass)}>
-                {CHOICE_LABELS[prediction]}
+                {choice_labels[prediction]}
               </span>
             </span>
           ) : (
