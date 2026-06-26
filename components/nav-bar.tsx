@@ -11,14 +11,32 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { LogoutButton } from "@/components/logout-button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
 import { useUserContext } from "@/context/userContext";
 import { useLeaderboardContext } from "@/context/leaderboardContext";
-import { useMemo } from "react";
-import { CalendarCheck, Table, Trophy } from "@phosphor-icons/react";
+import { useMemo, useState } from "react";
+import {
+  CalendarCheck,
+  Table,
+  Trophy,
+  User,
+  SignOut,
+  PencilSimple,
+} from "@phosphor-icons/react";
+import { UsernameDialog } from "@/components/username-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { href: "/predictions", label: "Predictions", icon: CalendarCheck },
@@ -28,9 +46,10 @@ const NAV_LINKS = [
 
 export function NavBar() {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const { user, loading } = useUserContext();
-  const { leaderboard } = useLeaderboardContext();
+  const { user, loading, setUser } = useUserContext();
+  const { leaderboard, refetch: refetchLeaderboard } = useLeaderboardContext();
 
   const user_name = user?.user_name;
   const me = useMemo(
@@ -40,6 +59,13 @@ export function NavBar() {
 
   const rank = me?.rank ?? 0;
   const points = me?.total_points ?? 0;
+  const [usernameOpen, setUsernameOpen] = useState(false);
+
+  const logout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white text-zinc-900 dark:border-zinc-200/10 dark:bg-black dark:text-zinc-100">
@@ -138,12 +164,66 @@ export function NavBar() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <span className="hidden sm:inline text-sm text-zinc-500 dark:text-zinc-400">
-                {user_name}
-              </span>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 rounded-full p-0.5 pr-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  >
+                    <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400">
+                      {user_name}
+                    </span>
+                    <Avatar size="sm">
+                      {user?.avatar_url ? (
+                        <AvatarImage src={user.avatar_url} alt={user_name} />
+                      ) : (
+                        <AvatarFallback className="bg-transparent">
+                          <User className="size-3" />
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    <Avatar size="sm">
+                      {user?.avatar_url ? (
+                        <AvatarImage src={user.avatar_url} alt={user_name} />
+                      ) : (
+                        <AvatarFallback className="bg-transparent">
+                          <User className="size-3" />
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <span className="truncate">{user_name}</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setUsernameOpen(true)}>
+                    <PencilSimple className="size-4" />
+                    Profile Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" onClick={logout}>
+                    <SignOut className="size-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <UsernameDialog
+                user={user}
+                onUpdate={(updated) => {
+                  setUser(updated);
+                  refetchLeaderboard();
+                }}
+                open={usernameOpen}
+                onOpenChange={setUsernameOpen}
+              />
             </div>
           ) : null}
-          <LogoutButton />
         </div>
       </div>
     </nav>
