@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Skeleton from "react-loading-skeleton";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
@@ -98,7 +99,7 @@ export function NavBar() {
                   href={link.href}
                   className={cn(
                     pathname.startsWith(link.href) &&
-                      "bg-zinc-100 text-zinc-950 font-semibold dark:bg-zinc-900 dark:text-white",
+                    "bg-zinc-100 text-zinc-950 font-semibold dark:bg-zinc-900 dark:text-white",
                   )}
                 >
                   <link.icon className="size-4 sm:mr-1.5" />

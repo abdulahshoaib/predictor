@@ -3,6 +3,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import "react-loading-skeleton/dist/skeleton.css";
+import { SkeletonTheme } from "react-loading-skeleton";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
@@ -41,7 +43,9 @@ export default function RootLayout({
         <Providers>
           <ErrorBoundary>
             <Background />
-            {children}
+            <SkeletonTheme baseColor="rgba(255, 255, 255, 0.1)" highlightColor="rgba(255, 255, 255, 0.15)">
+              {children}
+            </SkeletonTheme>
             <Footer />
           </ErrorBoundary>
         </Providers>
