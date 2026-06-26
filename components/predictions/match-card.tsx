@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Check, Loader2, Trash2 } from "lucide-react";
 import {
-  choice_labels,
   choices,
-  cn,
   formatTime,
   getPredictionLabel,
-  getResultClass,
-  getResultDotClass,
-  getResultLabel,
 } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +16,7 @@ import { Match } from "@/types/matches";
 
 type Base = {
   allPredictions?: Prediction[];
+  showBar?: boolean;
 };
 
 type PredictMatchCardProps = Base & {
@@ -28,7 +24,7 @@ type PredictMatchCardProps = Base & {
   match: Match;
   prediction?: PredictionChoice;
   submitting?: boolean;
-  onPredict: (match_id: number, choice: PredictionChoice) => void;
+  onPredict: (match_id: number, choice: PredictionChoice | null) => void;
   allPredictions?: Prediction[];
 };
 
@@ -42,21 +38,29 @@ type ResultMatchCardProps = Base & {
 type MatchCardProps = PredictMatchCardProps | ResultMatchCardProps;
 
 export function MatchCard(props: MatchCardProps) {
-  const { match, prediction, allPredictions } = props;
+  const { match, prediction, allPredictions, showBar = true } = props;
 
   const isResultCard = props.mode === "result";
   const submitting = !isResultCard ? props.submitting : false;
   const isCorrect = isResultCard ? props.isCorrect : undefined;
-  const predicted = Boolean(prediction);
-  const resultClass = getResultClass(predicted, isCorrect);
   const [localChoice, setLocalChoice] = useState<PredictionChoice | undefined>(
     prediction,
   );
+  const [submittingAction, setSubmittingAction] = useState<
+    "save" | "delete" | null
+  >(null);
 
   // Sync local selection when parent prediction updates
   useEffect(() => {
     setLocalChoice(prediction);
   }, [prediction]);
+
+  // Clear local submitting state when parent finishes
+  useEffect(() => {
+    if (!submitting) {
+      setSubmittingAction(null);
+    }
+  }, [submitting]);
 
   const handleChoiceClick = (choice: PredictionChoice) => {
     setLocalChoice(choice);
@@ -64,33 +68,20 @@ export function MatchCard(props: MatchCardProps) {
 
   const handleConfirm = async () => {
     if (!isResultCard && localChoice && !submitting) {
-      await props.onPredict(match.id, localChoice);
+      setSubmittingAction("save");
+      props.onPredict(match.id, localChoice);
     }
   };
 
-  const getTeamTextClass = (choice: PredictionChoice) => {
-    if (
-      !isResultCard ||
-      match.status !== "completed" ||
-      prediction !== choice
-    ) {
-      return "text-foreground";
+  const handleDelete = async () => {
+    if (!isResultCard && !submitting) {
+      setSubmittingAction("delete");
+      setLocalChoice(undefined);
+      props.onPredict(match.id, null);
     }
-
-    return resultClass;
   };
 
-  const getMarkerClass = () =>
-    isResultCard
-      ? match.status !== "completed"
-        ? cn(
-            "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white bg-amber-500 dark:border-zinc-950",
-          )
-        : cn(
-            "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-950",
-            getResultDotClass(predicted, isCorrect),
-          )
-      : "absolute -right-1.5 -top-1.5 z-10 h-3 w-3 animate-in zoom-in duration-300 rounded-full border-2 border-white bg-primary dark:border-zinc-950";
+  const getTeamTextClass = (_choice: PredictionChoice) => "text-foreground";
 
   return (
     <div className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
@@ -101,7 +92,7 @@ export function MatchCard(props: MatchCardProps) {
               Group {match.group_name}
             </span>
           )}
-          {!isResultCard && match.stadium && (
+          {match.stadium && (
             <span className="truncate text-[11px] text-muted-foreground">
               {match.stadium}
             </span>
@@ -110,9 +101,6 @@ export function MatchCard(props: MatchCardProps) {
 
         <div className="flex shrink-0 items-center gap-1.5">
           {match.time && <span>{formatTime(match.time)}</span>}
-          {isResultCard && match.status === "completed" && (
-            <span className="font-semibold text-zinc-400">FT</span>
-          )}
         </div>
       </div>
 
@@ -122,46 +110,38 @@ export function MatchCard(props: MatchCardProps) {
             <span className="block overflow-hidden rounded-md shadow-sm">
               {match.flag_home}
             </span>
-            {prediction === "home" && <span className={getMarkerClass()} />}
-          </span>
-          <span
-            className={cn(
-              "max-w-24 wrap-break-word text-balance text-center text-xs font-semibold leading-tight",
-              getTeamTextClass("home"),
+            {prediction === "home" && (
+              <span className="absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white bg-primary dark:border-zinc-950" />
             )}
-          >
+          </span>
+          <span className="max-w-24 wrap-break-word text-balance text-center text-xs font-semibold leading-tight text-foreground">
             {match.home_team || "TBD"}
           </span>
         </div>
 
-        {isResultCard ? (
-          <div className="flex shrink-0 flex-col items-center gap-2">
+        {isResultCard && (match.score_line || match.status === "ongoing") ? (
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px]">
             {match.score_line ? (
               <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-sm tracking-wide text-zinc-900 dark:bg-zinc-800/40 dark:text-zinc-50">
                 {match.score_line.replace("-", " – ")}
               </div>
-            ) : match.status === "ongoing" ? (
+            ) : (
               <div className="animate-pulse rounded-md bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:bg-amber-950/30 dark:text-amber-400">
                 Live
               </div>
-            ) : (
-              <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground dark:bg-zinc-800/40">
-                FT
-              </div>
             )}
             {prediction === "draw" && (
-              <span
-                className={cn(
-                  "h-2.5 w-2.5 rounded-full",
-                  match.status !== "completed"
-                    ? "bg-amber-500"
-                    : getResultDotClass(predicted, isCorrect),
-                )}
-              />
+              <span className="mt-1.5 h-2 w-2 rounded-full bg-primary" />
             )}
           </div>
+        ) : isResultCard ? (
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px]">
+            <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground dark:bg-zinc-800/40">
+              FT
+            </div>
+          </div>
         ) : (
-          <div className="flex shrink-0 flex-col items-center gap-2">
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px] gap-2">
             <div className="flex items-center gap-1.5">
               {choices.map(({ value, label }) => {
                 const isConfirmed = prediction === value;
@@ -174,6 +154,7 @@ export function MatchCard(props: MatchCardProps) {
                     variant={
                       isConfirmed ? "default" : isSelected ? "outline" : "ghost"
                     }
+                    className={isSelected ? "border-[#93c5fd] bg-[#93c5fd]" : ""}
                     size="icon-xs"
                   >
                     {label}
@@ -182,23 +163,34 @@ export function MatchCard(props: MatchCardProps) {
               })}
             </div>
 
-            {!isResultCard && localChoice !== prediction && (
+            <div className="flex items-center gap-1">
               <Button
                 onClick={handleConfirm}
-                disabled={submitting}
-                size="sm"
-                className="h-6 px-4 text-xs"
+                disabled={
+                  submitting || !localChoice || localChoice === prediction
+                }
+                size="icon-xs"
+                variant="outline"
               >
-                {submitting ? (
-                  <>
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Saving
-                  </>
+                {submittingAction === "save" ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (
-                  "Confirm"
+                  <Check className="h-3.5 w-3.5 text-emerald-400" />
                 )}
               </Button>
-            )}
+              <Button
+                onClick={handleDelete}
+                disabled={submitting || !prediction}
+                size="icon-xs"
+                variant="outline"
+              >
+                {submittingAction === "delete" ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                )}
+              </Button>
+            </div>
           </div>
         )}
 
@@ -207,28 +199,38 @@ export function MatchCard(props: MatchCardProps) {
             <span className="block overflow-hidden rounded-lg shadow-sm">
               {match.flag_away}
             </span>
-            {prediction === "away" && <span className={getMarkerClass()} />}
-          </span>
-          <span
-            className={cn(
-              "max-w-24 wrap-break-word text-balance text-center text-xs font-semibold leading-tight",
-              getTeamTextClass("away"),
+            {prediction === "away" && (
+              <span className="absolute -right-1.5 -top-1.5 z-10 h-3 w-3 rounded-full border-2 border-white bg-primary dark:border-zinc-950" />
             )}
-          >
+          </span>
+          <span className="max-w-24 wrap-break-word text-balance text-center text-xs font-semibold leading-tight text-foreground">
             {match.away_team || "TBD"}
           </span>
         </div>
       </div>
 
       <div className="mt-auto pt-3">
-        <PredictionBar predictions={allPredictions ?? []} />
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            showBar
+              ? "max-h-40 opacity-100"
+              : "max-h-0 opacity-0 pointer-events-none"
+          }`}
+        >
+          <PredictionBar predictions={allPredictions ?? []} />
+        </div>
         <div className="flex items-center justify-between pt-1">
-          {!isResultCard && prediction && (
+          {prediction && (
             <Badge
               variant="secondary"
-              className="h-5 border-emerald-100 bg-emerald-50 px-2 py-0 text-xs text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
+              className={`h-5 px-2 py-0 text-xs ${
+                isResultCard && isCorrect === false
+                  ? "border-red-100 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-950/40 dark:text-red-400"
+                  : "border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400"
+              }`}
             >
-              ✓ {getPredictionLabel(prediction, match)}
+              {isResultCard && isCorrect === false ? "✗" : "✓"}{" "}
+              {getPredictionLabel(prediction, match)}
             </Badge>
           )}
           <div className="ml-auto">
@@ -236,33 +238,6 @@ export function MatchCard(props: MatchCardProps) {
           </div>
         </div>
       </div>
-
-      {isResultCard && (
-        <div className="flex items-center justify-between gap-2 pt-3 text-xs tracking-wider text-muted-foreground">
-          {prediction ? (
-            <span className="min-w-0 truncate">
-              Prediction:{" "}
-              <span className={cn("font-bold", resultClass)}>
-                {choice_labels[prediction]}
-              </span>
-            </span>
-          ) : (
-            <span>Prediction: None</span>
-          )}
-          <span
-            className={cn(
-              "shrink-0",
-              match.status !== "completed"
-                ? "text-amber-500 font-semibold"
-                : resultClass,
-            )}
-          >
-            {match.status === "completed"
-              ? getResultLabel(predicted, isCorrect)
-              : "Ongoing"}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

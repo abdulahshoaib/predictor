@@ -1,11 +1,10 @@
 import { Suspense } from "react";
-import { PredictionsTabs } from "@/components/predictions/predictions-tabs";
+import { PredictionsPageClient } from "./predictions-page-client";
 
 async function PredictionsContent() {
   return (
     <main>
-      <h1 className="text-2xl font-bold mb-6">Match Predictions</h1>
-      <PredictionsTabs />
+      <PredictionsPageClient />
     </main>
   );
 }

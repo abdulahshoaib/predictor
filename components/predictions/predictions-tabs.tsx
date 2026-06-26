@@ -18,7 +18,7 @@ type PredictedMatch = Match & {
   isCorrect?: boolean;
 };
 
-export function PredictionsTabs() {
+export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
   const { upcoming, fulltime, loading: matchesLoading } = useMatchContext();
   const {
     predictions,
@@ -99,7 +99,10 @@ export function PredictionsTabs() {
     [predictedMatches],
   );
 
-  const handlePredict = async (match_id: number, choice: PredictionChoice) => {
+  const handlePredict = async (
+    match_id: number,
+    choice: PredictionChoice | null,
+  ) => {
     await submitPrediction(match_id, choice);
   };
 
@@ -150,6 +153,7 @@ export function PredictionsTabs() {
                       allPredictions={
                         predictionsByMatch.get(predictedMatch.id) ?? []
                       }
+                      showBar={showBar}
                     />
                   );
                 }
@@ -164,6 +168,7 @@ export function PredictionsTabs() {
                     submitting={submittingMatchId === match.id}
                     onPredict={handlePredict}
                     allPredictions={predictionsByMatch.get(match.id) ?? []}
+                    showBar={showBar}
                   />
                 );
               })}
