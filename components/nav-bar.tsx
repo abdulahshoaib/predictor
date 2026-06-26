@@ -170,7 +170,7 @@ export function NavBar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-2 rounded-full p-0.5 pr-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="gap-2 rounded-full p-1.5 pr-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   >
                     <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400">
                       {user_name}
