@@ -136,33 +136,57 @@ export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
               <div className="flex w-full items-start justify-between gap-2">
                 <div className="flex flex-1 flex-col items-center gap-2">
                   <span className="relative shrink-0 select-none text-2xl leading-none">
-                    <Skeleton width={32} height={24} className="rounded-md" />
+                    <span className="block overflow-hidden rounded-md shadow-sm">
+                      <Skeleton width={32} height={24} className="rounded-md" />
+                    </span>
                   </span>
-                  <Skeleton width={60} />
+                  <span className="max-w-24 text-balance text-center text-xs font-semibold leading-tight">
+                    <Skeleton width={60} />
+                  </span>
                 </div>
 
-                <div className="flex shrink-0 flex-col items-center gap-2">
+                <div className="flex shrink-0 flex-col items-center justify-center gap-2 min-h-19">
                   <div className="flex items-center gap-1.5">
-                    <Skeleton width={28} height={24} className="rounded-md" />
-                    <Skeleton width={28} height={24} className="rounded-md" />
-                    <Skeleton width={28} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
                   </div>
                 </div>
 
                 <div className="flex flex-1 flex-col items-center gap-2">
                   <span className="relative shrink-0 select-none text-2xl leading-none">
-                    <Skeleton width={32} height={24} className="rounded-md" />
+                    <span className="block overflow-hidden rounded-lg shadow-sm">
+                      <Skeleton width={32} height={24} className="rounded-md" />
+                    </span>
                   </span>
-                  <Skeleton width={60} />
+                  <span className="max-w-24 text-balance text-center text-xs font-semibold leading-tight">
+                    <Skeleton width={60} />
+                  </span>
                 </div>
               </div>
 
               <div className="mt-auto pt-3">
-                <Skeleton height={8} className="mb-2" />
+                <div className="overflow-hidden max-h-40">
+                  <div className="space-y-2">
+                    <Skeleton height={8} className="rounded-full" />
+                    <div className="flex items-center justify-between text-[11px]">
+                      <Skeleton width={40} />
+                      <Skeleton width={40} />
+                      <Skeleton width={40} />
+                    </div>
+                    <div className="text-center text-[11px]">
+                      <Skeleton width={80} />
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-center justify-between pt-1">
                   <Skeleton width={80} height={20} />
                   <div className="ml-auto">
-                    <Skeleton circle width={24} height={24} />
+                    <Skeleton width={60} height={24} />
                   </div>
                 </div>
               </div>
@@ -264,12 +288,12 @@ export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
         className="mt-0 focus-visible:outline-none focus-visible:ring-0"
       >
         {loading
-          ? renderLoading("Loading matches...")
+          ? renderLoading()
           : renderGroupedMatches(
-            groupedUpcoming,
-            "predict",
-            "No upcoming matches found.",
-          )}
+              groupedUpcoming,
+              "predict",
+              "No upcoming matches found.",
+            )}
       </TabsContent>
 
       <TabsContent
@@ -277,12 +301,12 @@ export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
         className="mt-0 focus-visible:outline-none focus-visible:ring-0"
       >
         {loading
-          ? renderLoading("Loading predictions...")
+          ? renderLoading()
           : renderGroupedMatches(
-            groupedPredicted,
-            "result",
-            "You haven't made any predictions yet.",
-          )}
+              groupedPredicted,
+              "result",
+              "You haven't made any predictions yet.",
+            )}
       </TabsContent>
     </Tabs>
   );
