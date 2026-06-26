@@ -111,7 +111,14 @@ export function NavBar() {
         </div>
         <div className="flex items-center gap-1 sm:gap-3">
           {loading ? (
-            <div className="h-4 w-20 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded" />
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1 rounded-full bg-emerald-50/80 px-2.5 py-0.5 border border-emerald-100 dark:bg-emerald-950/40 dark:border-emerald-900/50">
+                <Skeleton width={80} height={14} />
+              </div>
+              <div className="rounded-full p-1.5">
+                <Skeleton circle width={24} height={24} />
+              </div>
+            </div>
           ) : user_name ? (
             <div className="flex items-center gap-2">
               <Dialog>
@@ -176,11 +183,8 @@ export function NavBar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-2 rounded-full p-1.5 pr-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="rounded-full p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   >
-                    <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400">
-                      {user_name}
-                    </span>
                     <Avatar size="sm">
                       {user?.avatar_url ? (
                         <AvatarImage src={user.avatar_url} alt={user_name} />
