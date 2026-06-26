@@ -87,11 +87,15 @@ export function MatchCard(props: MatchCardProps) {
     <div className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
         <div className="flex min-w-0 flex-col gap-0.5">
-          {match.group_name && (
+          {match.group_name ? (
             <span className="font-semibold tracking-wider">
               Group {match.group_name}
             </span>
-          )}
+          ) : match.stage ? (
+            <span className="font-semibold tracking-wider">
+              {match.stage}
+            </span>
+          ) : null}
           {match.stadium && (
             <span className="truncate text-[11px] text-muted-foreground">
               {match.stadium}
@@ -143,24 +147,29 @@ export function MatchCard(props: MatchCardProps) {
         ) : (
           <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px] gap-2">
             <div className="flex items-center gap-1.5">
-              {choices.map(({ value, label }) => {
-                const isConfirmed = prediction === value;
-                const isSelected = localChoice === value && !isConfirmed;
+              {choices
+                .filter(({ value }) => {
+                  const isKnockout = match.stage !== "Group Stage";
+                  return !(isKnockout && value === "draw");
+                })
+                .map(({ value, label }) => {
+                  const isConfirmed = prediction === value;
+                  const isSelected = localChoice === value && !isConfirmed;
 
-                return (
-                  <Button
-                    key={value}
-                    onClick={() => handleChoiceClick(value)}
-                    variant={
-                      isConfirmed ? "default" : isSelected ? "outline" : "ghost"
-                    }
-                    className={isSelected ? "border-[#93c5fd] bg-[#93c5fd]" : ""}
-                    size="icon-xs"
-                  >
-                    {label}
-                  </Button>
-                );
-              })}
+                  return (
+                    <Button
+                      key={value}
+                      onClick={() => handleChoiceClick(value)}
+                      variant={
+                        isConfirmed ? "default" : isSelected ? "outline" : "ghost"
+                      }
+                      className={isSelected ? "border-[#93c5fd] bg-[#93c5fd]" : ""}
+                      size="icon-xs"
+                    >
+                      {label}
+                    </Button>
+                  );
+                })}
             </div>
 
             <div className="flex items-center gap-1">

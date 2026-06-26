@@ -135,31 +135,36 @@ export function NavBar() {
                   </DialogHeader>
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between border-b border-zinc-200 p-3.5 dark:border-zinc-800">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        Correct Prediction
-                      </span>
-                      <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                        +3 points
-                      </span>
+                    {/* Group Stage Rules */}
+                    <div className="p-3.5 border-b border-zinc-200 dark:border-zinc-800">
+                      <h4 className="font-bold text-xs text-zinc-400 mb-2 uppercase tracking-wider">Group Stage</h4>
+                      <div className="flex justify-between text-xs font-semibold mb-1.5">
+                        <span className="text-zinc-700 dark:text-zinc-300">Correct Prediction</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">+3 points</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-zinc-700 dark:text-zinc-300">Incorrect Prediction</span>
+                        <span className="text-red-600 dark:text-red-400">-1 point</span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-b border-zinc-200 p-3.5 dark:border-zinc-800">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        Incorrect Prediction
-                      </span>
-                      <span className="text-sm font-bold text-red-600 dark:text-red-400">
-                        -1 point
-                      </span>
+                    {/* Knockout Stage Rules */}
+                    <div className="p-3.5 border-b border-zinc-200 dark:border-zinc-800">
+                      <h4 className="font-bold text-xs text-zinc-400 mb-2 uppercase tracking-wider">Knockout Stage</h4>
+                      <div className="flex justify-between text-xs font-semibold mb-1.5">
+                        <span className="text-zinc-700 dark:text-zinc-300">Correct Prediction</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">+6 points</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-zinc-700 dark:text-zinc-300">Incorrect Prediction</span>
+                        <span className="text-red-600 dark:text-red-400">-2 points</span>
+                      </div>
                     </div>
 
+                    {/* No Prediction */}
                     <div className="flex items-center justify-between p-3.5">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        No Prediction
-                      </span>
-                      <span className="text-sm font-bold text-zinc-500">
-                        0 points
-                      </span>
+                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">No Prediction</span>
+                      <span className="text-sm font-bold text-zinc-500">0 points</span>
                     </div>
                   </div>
                 </DialogContent>
