@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Skeleton from "react-loading-skeleton";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import wc26Logo from "@/app/wc26.png";
@@ -98,7 +99,7 @@ export function NavBar() {
                   href={link.href}
                   className={cn(
                     pathname.startsWith(link.href) &&
-                      "bg-zinc-100 text-zinc-950 font-semibold dark:bg-zinc-900 dark:text-white",
+                    "bg-zinc-100 text-zinc-950 font-semibold dark:bg-zinc-900 dark:text-white",
                   )}
                 >
                   <link.icon className="size-4 sm:mr-1.5" />
@@ -110,7 +111,14 @@ export function NavBar() {
         </div>
         <div className="flex items-center gap-1 sm:gap-3">
           {loading ? (
-            <div className="h-4 w-20 bg-zinc-200 dark:bg-zinc-700 animate-pulse rounded" />
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-1 rounded-full bg-emerald-50/80 px-2.5 py-0.5 border border-emerald-100 dark:bg-emerald-950/40 dark:border-emerald-900/50">
+                <Skeleton width={80} height={14} />
+              </div>
+              <div className="rounded-full p-1.5">
+                <Skeleton circle width={24} height={24} />
+              </div>
+            </div>
           ) : user_name ? (
             <div className="flex items-center gap-2">
               <Dialog>
@@ -135,31 +143,36 @@ export function NavBar() {
                   </DialogHeader>
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between border-b border-zinc-200 p-3.5 dark:border-zinc-800">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        Correct Prediction
-                      </span>
-                      <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                        +3 points
-                      </span>
+                    {/* Group Stage Rules */}
+                    <div className="p-3.5 border-b border-zinc-200 dark:border-zinc-800">
+                      <h4 className="font-bold text-xs text-zinc-400 mb-2 uppercase tracking-wider">Group Stage</h4>
+                      <div className="flex justify-between text-xs font-semibold mb-1.5">
+                        <span className="text-zinc-700 dark:text-zinc-300">Correct Prediction</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">+3 points</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-zinc-700 dark:text-zinc-300">Incorrect Prediction</span>
+                        <span className="text-red-600 dark:text-red-400">-1 point</span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-b border-zinc-200 p-3.5 dark:border-zinc-800">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        Incorrect Prediction
-                      </span>
-                      <span className="text-sm font-bold text-red-600 dark:text-red-400">
-                        -1 point
-                      </span>
+                    {/* Knockout Stage Rules */}
+                    <div className="p-3.5 border-b border-zinc-200 dark:border-zinc-800">
+                      <h4 className="font-bold text-xs text-zinc-400 mb-2 uppercase tracking-wider">Knockout Stage</h4>
+                      <div className="flex justify-between text-xs font-semibold mb-1.5">
+                        <span className="text-zinc-700 dark:text-zinc-300">Correct Prediction</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">+6 points</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-zinc-700 dark:text-zinc-300">Incorrect Prediction</span>
+                        <span className="text-red-600 dark:text-red-400">-2 points</span>
+                      </div>
                     </div>
 
+                    {/* No Prediction */}
                     <div className="flex items-center justify-between p-3.5">
-                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        No Prediction
-                      </span>
-                      <span className="text-sm font-bold text-zinc-500">
-                        0 points
-                      </span>
+                      <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">No Prediction</span>
+                      <span className="text-sm font-bold text-zinc-500">0 points</span>
                     </div>
                   </div>
                 </DialogContent>
@@ -170,11 +183,8 @@ export function NavBar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-2 rounded-full p-1.5 pr-2 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="rounded-full p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   >
-                    <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400">
-                      {user_name}
-                    </span>
                     <Avatar size="sm">
                       {user?.avatar_url ? (
                         <AvatarImage src={user.avatar_url} alt={user_name} />

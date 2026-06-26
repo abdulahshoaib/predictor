@@ -1,6 +1,8 @@
 "use client";
 
 import { useGroupStandingsContext } from "@/context/groupstandingsContext";
+import { RefreshCw } from "lucide-react";
+import Skeleton from "react-loading-skeleton";
 import {
   Table,
   TableBody,
@@ -49,7 +51,7 @@ function GroupTable({
               data-qualified={entry.qualified || undefined}
               className={cn(
                 entry.qualified &&
-                  "border-l-2 border-l-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20",
+                "border-l-2 border-l-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20",
               )}
             >
               <TableCell className="text-center text-muted-foreground">
@@ -99,10 +101,99 @@ function GroupTable({
 }
 
 export default function GroupStandingsPage() {
-  const { groupStandings, loading, error } = useGroupStandingsContext();
+  const { groupStandings, loading, error, refreshGroupStandings } =
+    useGroupStandingsContext();
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+
+  if (loading) {
+    return (
+      <main>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Group Standings</h1>
+          <Button variant="outline" size="icon" onClick={refreshGroupStandings}>
+            <RefreshCw className="size-4" />
+          </Button>
+        </div>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="min-w-0 flex-1 space-y-6">
+            {Array.from({ length: 3 }).map((_, gIdx) => (
+              <div key={gIdx} className="rounded-md border">
+                <div className="border-b px-4 py-3 font-semibold"><Skeleton width={80} /></div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-8 text-center">#</TableHead>
+                      <TableHead>Team</TableHead>
+                      <TableHead className="text-center">Pld</TableHead>
+                      <TableHead className="text-center">W</TableHead>
+                      <TableHead className="text-center">D</TableHead>
+                      <TableHead className="text-center">L</TableHead>
+                      <TableHead className="text-center">GF</TableHead>
+                      <TableHead className="text-center">GA</TableHead>
+                      <TableHead className="text-center">GD</TableHead>
+                      <TableHead className="text-center">Pts</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 4 }).map((_, tIdx) => (
+                      <TableRow key={tIdx}>
+                        <TableCell className="text-center text-muted-foreground"><Skeleton width={15} /></TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 h-8">
+                            <Skeleton circle width={20} height={20} />
+                            <Skeleton width={80} />
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ))}
+          </div>
+          <div className="w-full shrink-0 lg:w-56">
+            <div className="rounded-md border">
+              <div className="border-b px-4 py-3 font-semibold">
+                3<sup>rd</sup> Place Teams
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-8 text-center">#</TableHead>
+                    <TableHead>Team</TableHead>
+                    <TableHead className="w-12 text-center">Pts</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 12 }).map((_, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell className="text-center font-medium"><Skeleton width={15} /></TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2 h-8">
+                          <Skeleton circle width={20} height={20} />
+                          <Skeleton width={80} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center font-bold tabular-nums"><Skeleton width={20} /></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   const grouped = groupStandings.reduce<Record<string, GroupStandings[]>>(
     (acc, item) => {
@@ -119,7 +210,12 @@ export default function GroupStandingsPage() {
 
   return (
     <main>
-      <h1 className="mb-6 text-2xl font-bold">Group Standings</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Group Standings</h1>
+        <Button variant="outline" size="icon" onClick={refreshGroupStandings}>
+          <RefreshCw className="size-4" />
+        </Button>
+      </div>
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="min-w-0 flex-1 space-y-6">
           {sortedGroups.map(([groupName, entries]) => (

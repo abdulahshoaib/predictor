@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 type ErrorSearchParams = Promise<{ error?: string }>;
 
@@ -7,10 +9,12 @@ function ErrorCardFallback() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Sorry, something went wrong.</CardTitle>
+        <CardTitle className="text-2xl">
+          <Skeleton width="70%" />
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">Loading error details.</p>
+        <Skeleton count={2} />
       </CardContent>
     </Card>
   );

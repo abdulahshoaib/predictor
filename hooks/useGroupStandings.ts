@@ -34,5 +34,6 @@ export function useGroupStandings() {
     groupStandings,
     loading,
     error,
+    refreshGroupStandings,
   };
 }

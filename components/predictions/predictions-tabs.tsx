@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { Loader2 } from "lucide-react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMatchContext } from "@/context/matchContext";
@@ -106,10 +107,93 @@ export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
     await submitPrediction(match_id, choice);
   };
 
-  const renderLoading = (text: string) => (
-    <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
-      <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-      <p className="text-sm">{text}</p>
+  const renderLoading = () => (
+    <div className="flex flex-col gap-10">
+      <section className="flex flex-col gap-3">
+        <h2 className="px-1 text-sm font-medium tracking-wider text-white/90">
+          <Skeleton width={120} />
+        </h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <span className="font-semibold tracking-wider">
+                    <Skeleton width={60} />
+                  </span>
+                  <span className="truncate text-[11px] text-muted-foreground">
+                    <Skeleton width={100} />
+                  </span>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Skeleton width={40} />
+                </div>
+              </div>
+
+              <div className="flex w-full items-start justify-between gap-2">
+                <div className="flex flex-1 flex-col items-center gap-2">
+                  <span className="relative shrink-0 select-none text-2xl leading-none">
+                    <span className="block overflow-hidden rounded-md shadow-sm">
+                      <Skeleton width={32} height={24} className="rounded-md" />
+                    </span>
+                  </span>
+                  <span className="max-w-24 text-balance text-center text-xs font-semibold leading-tight">
+                    <Skeleton width={60} />
+                  </span>
+                </div>
+
+                <div className="flex shrink-0 flex-col items-center justify-center gap-2 min-h-19">
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                    <Skeleton width={24} height={24} className="rounded-md" />
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col items-center gap-2">
+                  <span className="relative shrink-0 select-none text-2xl leading-none">
+                    <span className="block overflow-hidden rounded-lg shadow-sm">
+                      <Skeleton width={32} height={24} className="rounded-md" />
+                    </span>
+                  </span>
+                  <span className="max-w-24 text-balance text-center text-xs font-semibold leading-tight">
+                    <Skeleton width={60} />
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3">
+                <div className="overflow-hidden max-h-40">
+                  <div className="space-y-2">
+                    <Skeleton height={8} className="rounded-full" />
+                    <div className="flex items-center justify-between text-[11px]">
+                      <Skeleton width={40} />
+                      <Skeleton width={40} />
+                      <Skeleton width={40} />
+                    </div>
+                    <div className="text-center text-[11px]">
+                      <Skeleton width={80} />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <Skeleton width={80} height={20} />
+                  <div className="ml-auto">
+                    <Skeleton width={60} height={24} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 
@@ -204,7 +288,7 @@ export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
         className="mt-0 focus-visible:outline-none focus-visible:ring-0"
       >
         {loading
-          ? renderLoading("Loading matches...")
+          ? renderLoading()
           : renderGroupedMatches(
               groupedUpcoming,
               "predict",
@@ -217,7 +301,7 @@ export function PredictionsTabs({ showBar = true }: { showBar?: boolean }) {
         className="mt-0 focus-visible:outline-none focus-visible:ring-0"
       >
         {loading
-          ? renderLoading("Loading predictions...")
+          ? renderLoading()
           : renderGroupedMatches(
               groupedPredicted,
               "result",

@@ -3,6 +3,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import "react-loading-skeleton/dist/skeleton.css";
+import { SkeletonTheme } from "react-loading-skeleton";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
@@ -31,17 +33,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="min-h-screen">
       <body
         className={cn(
-          "overflow-x-hidden font-sans antialiased",
+          "min-h-screen flex flex-col overflow-x-hidden font-sans antialiased",
           manrope.variable,
         )}
       >
         <Providers>
           <ErrorBoundary>
             <Background />
-            {children}
+            <SkeletonTheme baseColor="rgba(255, 255, 255, 0.1)" highlightColor="rgba(255, 255, 255, 0.15)">
+              <div className="flex-1">{children}</div>
+            </SkeletonTheme>
             <Footer />
           </ErrorBoundary>
         </Providers>
