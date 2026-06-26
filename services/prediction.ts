@@ -12,8 +12,8 @@ export async function fetchPredictions() {
 
 export async function savePrediction(
   match_id: number,
-  choice: PredictionChoice,
-): Promise<Prediction> {
+  choice: PredictionChoice | null,
+): Promise<Prediction | null> {
   const res = await fetch("/api/predictions", {
     method: "POST",
     headers: {

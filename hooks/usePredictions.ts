@@ -62,7 +62,7 @@ export function usePredictions() {
     refreshPredictions();
   }, []);
 
-  async function submitPrediction(match_id: number, choice: PredictionChoice) {
+  async function submitPrediction(match_id: number, choice: PredictionChoice | null) {
     setSubmittingMatchId(match_id);
 
     try {
@@ -70,7 +70,7 @@ export function usePredictions() {
 
       const data = await fetchPredictions();
       setPredictions(data);
-      toast.success("Prediction saved");
+      toast.success(choice ? "Prediction saved" : "Prediction removed");
     } catch (error) {
       toast.error("Failed to save prediction");
 
