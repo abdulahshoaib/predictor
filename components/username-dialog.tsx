@@ -88,7 +88,7 @@ export function UsernameDialog({
         .from("avatars")
         .getPublicUrl(path);
 
-      const avatar_url = urlData.publicUrl;
+      const avatar_url = `${urlData.publicUrl}?t=${Date.now()}`;
       const updated = await updateUser({ avatar_url });
       onUpdate(updated);
       toast.success("Avatar updated");
