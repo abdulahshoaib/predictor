@@ -33,10 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="min-h-screen">
       <body
         className={cn(
-          "overflow-x-hidden font-sans antialiased",
+          "min-h-screen flex flex-col overflow-x-hidden font-sans antialiased",
           manrope.variable,
         )}
       >
@@ -44,7 +44,7 @@ export default function RootLayout({
           <ErrorBoundary>
             <Background />
             <SkeletonTheme baseColor="rgba(255, 255, 255, 0.1)" highlightColor="rgba(255, 255, 255, 0.15)">
-              {children}
+              <div className="flex-1">{children}</div>
             </SkeletonTheme>
             <Footer />
           </ErrorBoundary>
