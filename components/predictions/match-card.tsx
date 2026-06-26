@@ -233,7 +233,7 @@ export function MatchCard(props: MatchCardProps) {
               {getPredictionLabel(prediction, match)}
             </Badge>
           )}
-          <div className={prediction ? "ml-auto" : ""}>
+          <div className="ml-auto">
             <PredictionVotersDialog predictions={allPredictions ?? []} />
           </div>
         </div>
