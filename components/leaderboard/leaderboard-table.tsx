@@ -23,7 +23,7 @@ interface LeaderboardTableProps {
   user_name: string;
 }
 
-type SortKey = "rank" | "accuracy";
+type SortKey = "rank" | "accuracy" | "points";
 type SortDir = "asc" | "desc";
 
 export function LeaderboardTable({
@@ -48,12 +48,18 @@ export function LeaderboardTable({
       copy.sort((a, b) =>
         sortDir === "asc" ? a.rank - b.rank : b.rank - a.rank,
       );
-    } else {
+    } else if (sortKey === "accuracy") {
       copy.sort((a, b) => {
         const va = a.accuracy_percentage ?? -1;
         const vb = b.accuracy_percentage ?? -1;
         return sortDir === "asc" ? va - vb : vb - va;
       });
+    } else {
+      copy.sort((a, b) =>
+        sortDir === "asc"
+          ? a.total_points - b.total_points
+          : b.total_points - a.total_points,
+      );
     }
     return copy;
   }, [entries, sortKey, sortDir]);
@@ -110,7 +116,17 @@ export function LeaderboardTable({
             Accuracy
             <SortIcon col="accuracy" />
           </TableHead>
-          <TableHead className="text-right">Points</TableHead>
+          <TableHead
+            className={`text-right cursor-pointer select-none transition-colors ${
+              sortKey === "points"
+                ? "text-foreground bg-muted/20"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => toggleSort("points")}
+          >
+            Points
+            <SortIcon col="points" />
+          </TableHead>
         </TableRow>
       </TableHeader>
 
@@ -167,7 +183,9 @@ export function LeaderboardTable({
                 ? `${Math.round(entry.accuracy_percentage)}%`
                 : "—"}
             </TableCell>
-            <TableCell className="text-right font-medium tabular-nums">
+            <TableCell
+              className={`text-right font-medium tabular-nums ${sortKey === "points" ? "bg-muted/20" : ""}`}
+            >
               {entry.total_points}
             </TableCell>
           </TableRow>
