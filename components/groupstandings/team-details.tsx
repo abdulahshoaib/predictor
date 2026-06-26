@@ -15,12 +15,8 @@ export function TeamDialog({ team }: TeamDialogProps) {
   );
 
   const team_fulltime = fulltime
-    .filter(
-      (match) => match.home_team === team || match.away_team === team,
-    )
-    .sort(
-      (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
-    );
+    .filter((match) => match.home_team === team || match.away_team === team)
+    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
   const recentScores = team_fulltime.slice(0, 5).map((match) => {
     const isHome = match.home_team === team;
@@ -29,7 +25,8 @@ export function TeamDialog({ team }: TeamDialogProps) {
     const result: "W" | "L" | "D" =
       !match.result || match.result === "draw"
         ? "D"
-        : match.result === "home" && isHome || match.result === "away" && !isHome
+        : (match.result === "home" && isHome) ||
+            (match.result === "away" && !isHome)
           ? "W"
           : "L";
 
@@ -45,7 +42,7 @@ export function TeamDialog({ team }: TeamDialogProps) {
   const resultLabel = { W: "W", L: "L", D: "D" };
 
   return (
-    <DialogContent className="border-zinc-800 bg-black sm:max-w-md">
+    <DialogContent>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2 text-lg">
           <span className="inline-block w-5">{getTeamFlag(team)}</span>
@@ -70,9 +67,7 @@ export function TeamDialog({ team }: TeamDialogProps) {
                     <span className="w-4 shrink-0">
                       {getTeamFlag(match.opponent)}
                     </span>
-                    <span className="truncate text-sm">
-                      {match.opponent}
-                    </span>
+                    <span className="truncate text-sm">{match.opponent}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -104,9 +99,7 @@ export function TeamDialog({ team }: TeamDialogProps) {
             {team_upcoming.length > 0 ? (
               team_upcoming.map((match) => {
                 const opponent =
-                  match.home_team === team
-                    ? match.away_team
-                    : match.home_team;
+                  match.home_team === team ? match.away_team : match.home_team;
 
                 return (
                   <div
