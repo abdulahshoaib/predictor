@@ -23,10 +23,10 @@ export async function GET() {
   const now = Date.now();
 
   const upcoming =
-    matches.filter((m: Match) => new Date(m.time).getTime() > now) ?? [];
+    matches.filter((m: Match) => m.status === "scheduled" && new Date(m.time).getTime() > now) ?? [];
 
   const fulltime =
-    matches.filter((m: Match) => new Date(m.time).getTime() <= now) ?? [];
+    matches.filter((m: Match) => m.status === "completed" || m.status === "ongoing") ?? [];
 
   return NextResponse.json({
     upcoming: upcoming,
