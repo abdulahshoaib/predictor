@@ -29,6 +29,20 @@ export async function POST(request: NextRequest) {
   const { match_id, prediction_choice } = await request.json();
 
   try {
+    if (prediction_choice === null) {
+      const { error: deleteError } = await supabase
+        .from("predictions")
+        .delete()
+        .eq("user_id", user_id)
+        .eq("match_id", match_id);
+
+      if (deleteError) {
+        return NextResponse.json({ error: deleteError.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true });
+    }
+
     const { error: upsertError } = await supabase.from("predictions").upsert(
       {
         user_id: user_id,

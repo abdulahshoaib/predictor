@@ -99,7 +99,7 @@ export function PredictionsTabs() {
     [predictedMatches],
   );
 
-  const handlePredict = async (match_id: number, choice: PredictionChoice) => {
+  const handlePredict = async (match_id: number, choice: PredictionChoice | null) => {
     await submitPrediction(match_id, choice);
   };
 

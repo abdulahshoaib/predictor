@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Check, Loader2, Trash2 } from "lucide-react";
 import {
   choice_labels,
   choices,
@@ -28,7 +28,7 @@ type PredictMatchCardProps = Base & {
   match: Match;
   prediction?: PredictionChoice;
   submitting?: boolean;
-  onPredict: (match_id: number, choice: PredictionChoice) => void;
+  onPredict: (match_id: number, choice: PredictionChoice | null) => void;
   allPredictions?: Prediction[];
 };
 
@@ -52,11 +52,19 @@ export function MatchCard(props: MatchCardProps) {
   const [localChoice, setLocalChoice] = useState<PredictionChoice | undefined>(
     prediction,
   );
+  const [submittingAction, setSubmittingAction] = useState<"save" | "delete" | null>(null);
 
   // Sync local selection when parent prediction updates
   useEffect(() => {
     setLocalChoice(prediction);
   }, [prediction]);
+
+  // Clear local submitting state when parent finishes
+  useEffect(() => {
+    if (!submitting) {
+      setSubmittingAction(null);
+    }
+  }, [submitting]);
 
   const handleChoiceClick = (choice: PredictionChoice) => {
     setLocalChoice(choice);
@@ -64,7 +72,16 @@ export function MatchCard(props: MatchCardProps) {
 
   const handleConfirm = async () => {
     if (!isResultCard && localChoice && !submitting) {
-      await props.onPredict(match.id, localChoice);
+      setSubmittingAction("save");
+      props.onPredict(match.id, localChoice);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!isResultCard && !submitting) {
+      setSubmittingAction("delete");
+      setLocalChoice(undefined);
+      props.onPredict(match.id, null);
     }
   };
 
@@ -174,6 +191,7 @@ export function MatchCard(props: MatchCardProps) {
                     variant={
                       isConfirmed ? "default" : isSelected ? "outline" : "ghost"
                     }
+                    className={isSelected ? "border-[#93c5fd] bg-[#93c5fd]" : ""}
                     size="icon-xs"
                   >
                     {label}
@@ -182,22 +200,35 @@ export function MatchCard(props: MatchCardProps) {
               })}
             </div>
 
-            {!isResultCard && localChoice !== prediction && (
-              <Button
-                onClick={handleConfirm}
-                disabled={submitting}
-                size="sm"
-                className="h-6 px-4 text-xs"
-              >
-                {submitting ? (
-                  <>
+            {!isResultCard && (
+              <div className="flex items-center gap-1">
+                <Button
+                  onClick={handleConfirm}
+                  disabled={
+                    submitting || !localChoice || localChoice === prediction
+                  }
+                  size="icon-xs"
+                  variant="outline"
+                >
+                  {submittingAction === "save" ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
-                    Saving
-                  </>
-                ) : (
-                  "Confirm"
-                )}
-              </Button>
+                  ) : (
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                  )}
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  disabled={submitting || !prediction}
+                  size="icon-xs"
+                  variant="outline"
+                >
+                  {submittingAction === "delete" ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                  )}
+                </Button>
+              </div>
             )}
           </div>
         )}
