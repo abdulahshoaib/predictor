@@ -86,5 +86,6 @@ export function usePredictions() {
     submittingMatchId,
     submitPrediction,
     error,
+    refreshPredictions,
   };
 }
