@@ -6,8 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LeaderboardEntry } from "@/types/leaderboard";
 import { Crown } from "lucide-react";
+import { User } from "@phosphor-icons/react";
 
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[];
@@ -35,6 +37,8 @@ export function LeaderboardTable({
         <TableRow>
           <TableHead className="w-16 text-center">#</TableHead>
           <TableHead>Player</TableHead>
+          <TableHead className="text-right">Correct</TableHead>
+          <TableHead className="text-right">Accuracy</TableHead>
           <TableHead className="text-right">Points</TableHead>
         </TableRow>
       </TableHeader>
@@ -65,9 +69,32 @@ export function LeaderboardTable({
               )}
             </TableCell>
 
-            <TableCell>{entry.user_name}</TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <Avatar size="lg">
+                  {entry.avatar_url ? (
+                    <AvatarImage src={entry.avatar_url} alt={entry.user_name} />
+                  ) : (
+                    <AvatarFallback className="bg-transparent">
+                      <User className="size-5" />
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <span>{entry.user_name}</span>
+              </div>
+            </TableCell>
 
-            <TableCell className="text-right">{entry.total_points}</TableCell>
+            <TableCell className="text-right tabular-nums text-muted-foreground">
+              {entry.total_correct}/{entry.total_predictions}
+            </TableCell>
+            <TableCell className="text-right tabular-nums text-muted-foreground">
+              {entry.accuracy_percentage != null
+                ? `${Math.round(entry.accuracy_percentage)}%`
+                : "—"}
+            </TableCell>
+            <TableCell className="text-right font-medium tabular-nums">
+              {entry.total_points}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -18,15 +18,28 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    const userIds = data?.map((e) => e.user_id) ?? [];
+
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, avatar_url")
+      .in("id", userIds);
+
+    const avatarMap = new Map(
+      users?.map((u) => [u.id, u.avatar_url]) ?? [],
+    );
+
     const leaderboard: Leaderboard = {
       entries:
         data?.map((entry) => ({
           rank: entry.rank,
           user_id: entry.user_id,
           user_name: entry.username,
+          avatar_url: avatarMap.get(entry.user_id) ?? null,
           total_points: Number(entry.total_points),
-          correct_predictions: entry.correct_predictions,
           total_predictions: entry.total_predictions,
+          total_correct: entry.total_correct,
+          accuracy_percentage: entry.accuracy_percentage,
         })) ?? [],
     };
 

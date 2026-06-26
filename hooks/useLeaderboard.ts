@@ -34,5 +34,6 @@ export function useLeaderboard() {
     leaderboard,
     loading,
     error,
+    refetch: loadLeaderboard,
   };
 }
