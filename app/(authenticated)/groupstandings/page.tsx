@@ -1,6 +1,7 @@
 "use client";
 
 import { useGroupStandingsContext } from "@/context/groupstandingsContext";
+import Skeleton from "react-loading-skeleton";
 import {
   Table,
   TableBody,
@@ -49,7 +50,7 @@ function GroupTable({
               data-qualified={entry.qualified || undefined}
               className={cn(
                 entry.qualified &&
-                  "border-l-2 border-l-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20",
+                "border-l-2 border-l-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20",
               )}
             >
               <TableCell className="text-center text-muted-foreground">
@@ -101,8 +102,64 @@ function GroupTable({
 export default function GroupStandingsPage() {
   const { groupStandings, loading, error } = useGroupStandingsContext();
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+
+  if (loading) {
+    return (
+      <main>
+        <h1 className="mb-6 text-2xl font-bold">Group Standings</h1>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="min-w-0 flex-1 space-y-6">
+            {Array.from({ length: 3 }).map((_, gIdx) => (
+              <div key={gIdx} className="rounded-md border">
+                <div className="border-b px-4 py-3 font-semibold"><Skeleton width={80} /></div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-8 text-center"><Skeleton width={15} /></TableHead>
+                      <TableHead><Skeleton width={40} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                      <TableHead className="text-center"><Skeleton width={20} /></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 4 }).map((_, tIdx) => (
+                      <TableRow key={tIdx}>
+                        <TableCell className="text-center"><Skeleton width={10} /></TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Skeleton circle width={20} height={20} />
+                            <Skeleton width={80} />
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                        <TableCell className="text-center"><Skeleton width={15} /></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ))}
+          </div>
+          <div className="w-full shrink-0 lg:w-56">
+            <Skeleton height={400} />
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   const grouped = groupStandings.reduce<Record<string, GroupStandings[]>>(
     (acc, item) => {

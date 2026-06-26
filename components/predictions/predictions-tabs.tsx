@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { Loader2 } from "lucide-react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMatchContext } from "@/context/matchContext";
@@ -103,10 +104,69 @@ export function PredictionsTabs() {
     await submitPrediction(match_id, choice);
   };
 
-  const renderLoading = (text: string) => (
-    <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
-      <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-      <p className="text-sm">{text}</p>
+  const renderLoading = () => (
+    <div className="flex flex-col gap-10">
+      <section className="flex flex-col gap-3">
+        <h2 className="px-1 text-sm font-medium tracking-wider text-white/90">
+          <Skeleton width={120} />
+        </h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <span className="font-semibold tracking-wider">
+                    <Skeleton width={60} />
+                  </span>
+                  <span className="truncate text-[11px] text-muted-foreground">
+                    <Skeleton width={100} />
+                  </span>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Skeleton width={40} />
+                </div>
+              </div>
+
+              <div className="flex w-full items-start justify-between gap-2">
+                <div className="flex flex-1 flex-col items-center gap-2">
+                  <span className="relative shrink-0 select-none text-2xl leading-none">
+                    <Skeleton width={32} height={24} className="rounded-md" />
+                  </span>
+                  <Skeleton width={60} />
+                </div>
+
+                <div className="flex shrink-0 flex-col items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton width={28} height={24} className="rounded-md" />
+                    <Skeleton width={28} height={24} className="rounded-md" />
+                    <Skeleton width={28} height={24} className="rounded-md" />
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col items-center gap-2">
+                  <span className="relative shrink-0 select-none text-2xl leading-none">
+                    <Skeleton width={32} height={24} className="rounded-md" />
+                  </span>
+                  <Skeleton width={60} />
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3">
+                <Skeleton height={8} className="mb-2" />
+                <div className="flex items-center justify-between pt-1">
+                  <Skeleton width={80} height={20} />
+                  <div className="ml-auto">
+                    <Skeleton circle width={24} height={24} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 
@@ -201,10 +261,10 @@ export function PredictionsTabs() {
         {loading
           ? renderLoading("Loading matches...")
           : renderGroupedMatches(
-              groupedUpcoming,
-              "predict",
-              "No upcoming matches found.",
-            )}
+            groupedUpcoming,
+            "predict",
+            "No upcoming matches found.",
+          )}
       </TabsContent>
 
       <TabsContent
@@ -214,10 +274,10 @@ export function PredictionsTabs() {
         {loading
           ? renderLoading("Loading predictions...")
           : renderGroupedMatches(
-              groupedPredicted,
-              "result",
-              "You haven't made any predictions yet.",
-            )}
+            groupedPredicted,
+            "result",
+            "You haven't made any predictions yet.",
+          )}
       </TabsContent>
     </Tabs>
   );
