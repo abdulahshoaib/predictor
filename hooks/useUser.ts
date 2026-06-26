@@ -34,5 +34,6 @@ export function useUser() {
     user,
     loading,
     error,
+    setUser,
   };
 }
