@@ -55,14 +55,14 @@ export function SignUpForm({
       if (error) throw error;
 
       if (data?.user) {
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert({
-            id: data.user.id,
-            user_name: username.trim().toLowerCase(),
-          });
+        const { error: profileError } = await supabase.from("users").insert({
+          id: data.user.id,
+          user_name: username.trim().toLowerCase(),
+        });
         if (profileError) {
-          console.error("Error creating user profile in users table:", profileError.message);
+          throw Error(
+            `Error creating user profile in users table: ${profileError.message}`,
+          );
         }
       }
 
