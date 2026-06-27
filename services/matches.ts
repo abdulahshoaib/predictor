@@ -13,7 +13,6 @@ export async function fetchMatches() {
   const res = await fetch("/api/matches");
 
   if (!res.ok) {
-    console.error(await res.text());
     throw new Error(`HTTP ${res.status}`);
   }
 

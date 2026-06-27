@@ -2,13 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { Check, Loader2, Trash2 } from "lucide-react";
-import {
-  choices,
-  formatTime,
-  getPredictionLabel,
-} from "@/lib/utils";
+import { choices, formatTime, getPredictionLabel } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Prediction, PredictionChoice } from "@/types/predictions";
 import { PredictionBar } from "./prediction-bar";
 import { PredictionVotersDialog } from "./prediction-voters-dialog";
@@ -43,6 +49,7 @@ export function MatchCard(props: MatchCardProps) {
   const isResultCard = props.mode === "result";
   const submitting = !isResultCard ? props.submitting : false;
   const isCorrect = isResultCard ? props.isCorrect : undefined;
+  const matchStarted = match.status !== "scheduled";
   const [localChoice, setLocalChoice] = useState<PredictionChoice | undefined>(
     prediction,
   );
@@ -81,8 +88,6 @@ export function MatchCard(props: MatchCardProps) {
     }
   };
 
-  const getTeamTextClass = (_choice: PredictionChoice) => "text-foreground";
-
   return (
     <div className="relative flex h-auto min-h-37 flex-col rounded-md border border-zinc-200 bg-white p-4 shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-950">
       <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
@@ -92,9 +97,7 @@ export function MatchCard(props: MatchCardProps) {
               Group {match.group_name}
             </span>
           ) : match.stage ? (
-            <span className="font-semibold tracking-wider">
-              {match.stage}
-            </span>
+            <span className="font-semibold tracking-wider">{match.stage}</span>
           ) : null}
           {match.stadium && (
             <span className="truncate text-[11px] text-muted-foreground">
@@ -124,7 +127,7 @@ export function MatchCard(props: MatchCardProps) {
         </div>
 
         {isResultCard && (match.score_line || match.status === "ongoing") ? (
-          <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px]">
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-19">
             {match.score_line ? (
               <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-sm tracking-wide text-zinc-900 dark:bg-zinc-800/40 dark:text-zinc-50">
                 {match.score_line.replace("-", " – ")}
@@ -139,13 +142,13 @@ export function MatchCard(props: MatchCardProps) {
             )}
           </div>
         ) : isResultCard ? (
-          <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px]">
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-19">
             <div className="rounded-md bg-zinc-50 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground dark:bg-zinc-800/40">
               FT
             </div>
           </div>
         ) : (
-          <div className="flex shrink-0 flex-col items-center justify-center min-h-[76px] gap-2">
+          <div className="flex shrink-0 flex-col items-center justify-center min-h-19 gap-2">
             <div className="flex items-center gap-1.5">
               {choices
                 .filter(({ value }) => {
@@ -161,9 +164,15 @@ export function MatchCard(props: MatchCardProps) {
                       key={value}
                       onClick={() => handleChoiceClick(value)}
                       variant={
-                        isConfirmed ? "default" : isSelected ? "outline" : "ghost"
+                        isConfirmed
+                          ? "default"
+                          : isSelected
+                            ? "outline"
+                            : "ghost"
                       }
-                      className={isSelected ? "border-[#93c5fd] bg-[#93c5fd]" : ""}
+                      className={
+                        isSelected ? "border-[#93c5fd] bg-[#93c5fd]" : ""
+                      }
                       size="icon-xs"
                     >
                       {label}
@@ -176,7 +185,7 @@ export function MatchCard(props: MatchCardProps) {
               <Button
                 onClick={handleConfirm}
                 disabled={
-                  submitting || !localChoice || localChoice === prediction
+                  submitting || matchStarted || !localChoice || localChoice === prediction
                 }
                 size="icon-xs"
                 variant="outline"
@@ -187,18 +196,47 @@ export function MatchCard(props: MatchCardProps) {
                   <Check className="h-3.5 w-3.5 text-emerald-400" />
                 )}
               </Button>
-              <Button
-                onClick={handleDelete}
-                disabled={submitting || !prediction}
-                size="icon-xs"
-                variant="outline"
-              >
-                {submittingAction === "delete" ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Trash2 className="h-3.5 w-3.5 text-red-400" />
-                )}
-              </Button>
+              {/* DELETE BUTTON */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    disabled={submitting || matchStarted || !prediction}
+                    size="icon-xs"
+                    variant="outline"
+                  >
+                    {submittingAction === "delete" ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                    )}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete Prediction</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete your prediction for:
+                      <span className="flex items-center justify-center gap-2 mt-1.5">
+                        <span className="flex items-center gap-1">
+                          {match.flag_home} {match.home_team}
+                        </span>
+                        <span className="text-muted-foreground">vs</span>
+                        <span className="flex items-center gap-1">
+                          {match.away_team} {match.flag_away}
+                        </span>
+                      </span>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button variant="destructive" onClick={handleDelete}>
+                      Delete
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         )}
